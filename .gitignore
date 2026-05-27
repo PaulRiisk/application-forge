@@ -1,0 +1,25 @@
+node_modules
+start
+dist
+dist-ssr
+*.local
+.vite
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# editors / OS
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# bootstrap scaffolding, never shipped
+start/
