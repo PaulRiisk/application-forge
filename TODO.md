@@ -79,12 +79,25 @@ toggle a `.has-overflow` class on the preview root, gate the `::before`
 / `::after` rules on that class. Or use container queries / size queries
 if simpler.
 
-## PDF: text is not selectable
+## Other observations
 
-Phase 6 ships a raster-based export — every page is an html2canvas
-snapshot embedded as a JPEG inside the PDF. Pros: pixel-perfect match to
-the in-app preview, no font embedding headaches, every special character
-works. Cons: larger files (~2 MB vs ~100 KB), no text selection/search,
+- Phase 2 verification noted the Deckblatt sidebar tint was missing; fixed in
+  Phase 3 follow-up. Keep an eye out for similar drift between the document
+  previews — they should look like one family.
+
+---
+
+# Zukunftsausblick
+
+Items that aren't part of the v1 scope and probably not the next v
+either, but worth keeping around so we don't lose the thinking.
+
+## Selectable / searchable PDF text
+
+Current export is raster-based (html2canvas → JPEG → jsPDF). Each page
+is essentially a picture. Pros: pixel-perfect match to the in-app
+preview, no font embedding headaches, every special character works.
+Cons: larger files (~2 MB vs ~100 KB), no text selection or search,
 worse for accessibility and for ATS pipelines that parse application
 PDFs.
 
@@ -105,9 +118,3 @@ Options for a future text-PDF export:
 
 Lean toward B when this becomes a priority. For now A is fine because
 modern ATS readers OCR raster PDFs reliably.
-
-## Other observations
-
-- Phase 2 verification noted the Deckblatt sidebar tint was missing; fixed in
-  Phase 3 follow-up. Keep an eye out for similar drift between the document
-  previews — they should look like one family.

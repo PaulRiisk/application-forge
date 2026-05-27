@@ -22,7 +22,11 @@ import {
   type ExportPage,
 } from "./pdf/exportPdf";
 import { useApp, useAppDispatch } from "./state/AppContext";
-import { clearLocalStorage } from "./state/persistence";
+import {
+  clearLocalStorage,
+  downloadJson,
+  readJsonFile,
+} from "./state/persistence";
 
 // wait one animation frame so layout flushes after a state change
 function nextFrame(): Promise<void> {
@@ -41,10 +45,26 @@ function App() {
   const doc = useApp();
   const dispatch = useAppDispatch();
   const exportRefs = useRef<ExportRefs>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // phase 7 stubs
-  const handleSave = () => window.alert("Save lands in phase 7.");
-  const handleLoad = () => window.alert("Load lands in phase 7.");
+  const handleSave = () => downloadJson(doc);
+
+  const handleLoad = () => fileInputRef.current?.click();
+
+  const handleLoadFile = async (file: File) => {
+    try {
+      const loaded = await readJsonFile(file);
+      dispatch({ type: "LOAD_DOCUMENT", doc: loaded });
+      // photo and signature aren't in the document — clear so the user knows
+      // to re-upload after loading a saved file
+      setPhotoUrl(null);
+      setSignatureUrl(null);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Could not load file.";
+      window.alert(message);
+    }
+  };
+
   const handleReset = () => {
     if (
       !window.confirm(
@@ -144,6 +164,19 @@ function App() {
         onLoad={handleLoad}
         onReset={handleReset}
         onExport={() => setExportOpen(true)}
+      />
+
+      {/* hidden file input opened by the Load button */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="application/json,.json"
+        style={{ display: "none" }}
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) handleLoadFile(file);
+          e.target.value = "";
+        }}
       />
 
       <main className="panes">
