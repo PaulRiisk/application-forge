@@ -1,0 +1,131 @@
+// modal for the Export PDF action
+// user picks which documents to include and (if anschreiben is in) which letter
+// the dialog owns selection state; the parent runs the actual export
+
+import { useEffect, useState } from "react";
+import { useApp } from "../state/AppContext";
+
+export type ExportSelection = {
+  deckblatt: boolean;
+  anschreiben: boolean;
+  lebenslauf: boolean;
+  about: boolean;
+  letterId: string;
+};
+
+type Props = {
+  open: boolean;
+  onCancel: () => void;
+  onExport: (selection: ExportSelection) => void;
+};
+
+export function ExportDialog({ open, onCancel, onExport }: Props) {
+  const { letters } = useApp();
+
+  const [deckblatt, setDeckblatt] = useState(true);
+  const [anschreiben, setAnschreiben] = useState(true);
+  const [lebenslauf, setLebenslauf] = useState(true);
+  const [about, setAbout] = useState(true);
+  const [letterId, setLetterId] = useState(letters.activeId);
+
+  // sync letter selection if the active letter changes between opens
+  useEffect(() => {
+    if (open) setLetterId(letters.activeId);
+  }, [open, letters.activeId]);
+
+  if (!open) return null;
+
+  const noneSelected = !deckblatt && !anschreiben && !lebenslauf && !about;
+
+  const handleExport = () => {
+    if (noneSelected) return;
+    onExport({ deckblatt, anschreiben, lebenslauf, about, letterId });
+  };
+
+  return (
+    <div
+      className="modal-backdrop"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Export PDF"
+      onClick={onCancel}
+    >
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
+        <h2>Export PDF</h2>
+        <p className="helper-text">
+          Pick which documents go into the combined PDF. They appear in the
+          order shown.
+        </p>
+
+        <ul className="export-list">
+          <li>
+            <label>
+              <input
+                type="checkbox"
+                checked={deckblatt}
+                onChange={(e) => setDeckblatt(e.target.checked)}
+              />
+              Deckblatt
+            </label>
+          </li>
+          <li>
+            <label>
+              <input
+                type="checkbox"
+                checked={anschreiben}
+                onChange={(e) => setAnschreiben(e.target.checked)}
+              />
+              Anschreiben
+            </label>
+            {anschreiben && (
+              <select
+                className="letter-select"
+                value={letterId}
+                onChange={(e) => setLetterId(e.target.value)}
+              >
+                {letters.items.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.label}
+                  </option>
+                ))}
+              </select>
+            )}
+          </li>
+          <li>
+            <label>
+              <input
+                type="checkbox"
+                checked={lebenslauf}
+                onChange={(e) => setLebenslauf(e.target.checked)}
+              />
+              Lebenslauf
+            </label>
+          </li>
+          <li>
+            <label>
+              <input
+                type="checkbox"
+                checked={about}
+                onChange={(e) => setAbout(e.target.checked)}
+              />
+              About Me
+            </label>
+          </li>
+        </ul>
+
+        <div className="modal-actions">
+          <button type="button" onClick={onCancel}>
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleExport}
+            disabled={noneSelected}
+          >
+            Export
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

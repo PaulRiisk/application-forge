@@ -1,8 +1,8 @@
 // top-level component: topbar + active tab body + preview pane
-// app owns the photo url (kept in memory only, never persisted) and zoom state
-// each tab decides what its preview is; stammdaten owns the cover page
+// app owns photo + signature (memory only) and zoom state
+// also hosts the offscreen export tree so the export dialog can snapshot all four
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Topbar, type TabId } from "./topbar/Topbar";
 import { StammdatenEditor } from "./stammdaten/StammdatenEditor";
 import { CoverPagePreview } from "./stammdaten/CoverPagePreview";
@@ -14,8 +14,20 @@ import { AboutEditor } from "./about/AboutEditor";
 import { AboutPreview } from "./about/AboutPreview";
 import { PreviewShell } from "./preview/PreviewShell";
 import { PreviewToolbar } from "./preview/PreviewToolbar";
-import { useAppDispatch } from "./state/AppContext";
+import { ExportDialog, type ExportSelection } from "./topbar/ExportDialog";
+import { ExportHost, type ExportRefs } from "./pdf/ExportHost";
+import {
+  exportApplicationPdf,
+  slugify,
+  type ExportPage,
+} from "./pdf/exportPdf";
+import { useApp, useAppDispatch } from "./state/AppContext";
 import { clearLocalStorage } from "./state/persistence";
+
+// wait one animation frame so layout flushes after a state change
+function nextFrame(): Promise<void> {
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabId>("stammdaten");
@@ -24,13 +36,15 @@ function App() {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
   const [zoom, setZoom] = useState(0.75);
+  const [exportOpen, setExportOpen] = useState(false);
 
+  const doc = useApp();
   const dispatch = useAppDispatch();
+  const exportRefs = useRef<ExportRefs>(null);
 
-  // phase 1/2 stubs, real wiring lands in later phases
+  // phase 7 stubs
   const handleSave = () => window.alert("Save lands in phase 7.");
   const handleLoad = () => window.alert("Load lands in phase 7.");
-  const handleExport = () => window.alert("Export PDF lands in phase 6.");
   const handleReset = () => {
     if (
       !window.confirm(
@@ -45,6 +59,79 @@ function App() {
     dispatch({ type: "RESET" });
   };
 
+  // build filename from §6 of the plan
+  const buildFilename = (sel: ExportSelection): string => {
+    const nameSlug = slugify(doc.stammdaten.name);
+    const all = sel.deckblatt && sel.anschreiben && sel.lebenslauf && sel.about;
+    if (all) return `${nameSlug}-application.pdf`;
+    const onlyLetter =
+      !sel.deckblatt && sel.anschreiben && !sel.lebenslauf && !sel.about;
+    if (onlyLetter) {
+      const letter = doc.letters.items.find((l) => l.id === sel.letterId);
+      const companySlug = slugify(letter?.company ?? "company");
+      return `${nameSlug}-anschreiben-${companySlug}.pdf`;
+    }
+    const parts: string[] = [];
+    if (sel.deckblatt) parts.push("deckblatt");
+    if (sel.anschreiben) parts.push("anschreiben");
+    if (sel.lebenslauf) parts.push("lebenslauf");
+    if (sel.about) parts.push("about");
+    return `${nameSlug}-${parts.join("-")}.pdf`;
+  };
+
+  // run the export pipeline: switch active letter if needed, snapshot all
+  // chosen previews, restore active letter, save the pdf
+  const runExport = async (sel: ExportSelection) => {
+    setExportOpen(false);
+
+    const previousActive = doc.letters.activeId;
+    const needLetterSwitch =
+      sel.anschreiben && sel.letterId !== previousActive;
+    if (needLetterSwitch) {
+      dispatch({ type: "LETTERS_SET_ACTIVE", id: sel.letterId });
+    }
+
+    // give react two frames to commit + browser to lay out the offscreen tree
+    await nextFrame();
+    await nextFrame();
+
+    const refs = exportRefs.current;
+    if (!refs) {
+      window.alert("Export failed: preview host not mounted.");
+      return;
+    }
+
+    const order: { key: keyof ExportRefs; flag: boolean }[] = [
+      { key: "deckblatt", flag: sel.deckblatt },
+      { key: "anschreiben", flag: sel.anschreiben },
+      { key: "lebenslauf", flag: sel.lebenslauf },
+      { key: "about", flag: sel.about },
+    ];
+
+    const pages: ExportPage[] = [];
+    for (const { key, flag } of order) {
+      if (!flag) continue;
+      const el = refs[key];
+      if (el) {
+        // suppress the A4 overflow indicator while exporting
+        el.classList.add("pdf-exporting");
+        pages.push({ element: el, key });
+      }
+    }
+
+    try {
+      await exportApplicationPdf(pages, buildFilename(sel));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "PDF export failed.";
+      window.alert(message);
+    } finally {
+      pages.forEach((p) => p.element.classList.remove("pdf-exporting"));
+      if (needLetterSwitch) {
+        dispatch({ type: "LETTERS_SET_ACTIVE", id: previousActive });
+      }
+    }
+  };
+
   // fall back to the bundled placeholder if no photo is uploaded
   const photoSrc = photoUrl ?? `${import.meta.env.BASE_URL}placeholder_cv.png`;
 
@@ -56,7 +143,7 @@ function App() {
         onSave={handleSave}
         onLoad={handleLoad}
         onReset={handleReset}
-        onExport={handleExport}
+        onExport={() => setExportOpen(true)}
       />
 
       <main className="panes">
@@ -112,6 +199,19 @@ function App() {
           )}
         </section>
       </main>
+
+      {/* offscreen tree used only by the export pipeline */}
+      <ExportHost
+        ref={exportRefs}
+        photoUrl={photoSrc}
+        signatureUrl={signatureUrl}
+      />
+
+      <ExportDialog
+        open={exportOpen}
+        onCancel={() => setExportOpen(false)}
+        onExport={runExport}
+      />
     </div>
   );
 }

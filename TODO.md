@@ -79,6 +79,33 @@ toggle a `.has-overflow` class on the preview root, gate the `::before`
 / `::after` rules on that class. Or use container queries / size queries
 if simpler.
 
+## PDF: text is not selectable
+
+Phase 6 ships a raster-based export — every page is an html2canvas
+snapshot embedded as a JPEG inside the PDF. Pros: pixel-perfect match to
+the in-app preview, no font embedding headaches, every special character
+works. Cons: larger files (~2 MB vs ~100 KB), no text selection/search,
+worse for accessibility and for ATS pipelines that parse application
+PDFs.
+
+Options for a future text-PDF export:
+
+- **B**: render via `jsPDF.text()` / `pdf.html()` with manual layout.
+  Cleanest output, smallest file. Cost: layout has to be maintained
+  twice (CSS for preview, jsPDF coordinates for export). Markdown body
+  renderer for the cover letter would need a parallel implementation.
+- **C**: keep the canvas image, overlay an invisible selectable text
+  layer (pdf.js style). Tooling doesn't exist out of the box, the text
+  layer would drift if CSS changes.
+- **D**: use `window.print()` + `@media print` CSS. Browser renders
+  text-PDF natively. Loses the multi-doc combine in one click — needs a
+  print route that stacks the chosen pages.
+- **E**: switch the export pipeline to `@react-pdf/renderer`. Parallel
+  render engine, separate layout system, +200 KB dep.
+
+Lean toward B when this becomes a priority. For now A is fine because
+modern ATS readers OCR raster PDFs reliably.
+
 ## Other observations
 
 - Phase 2 verification noted the Deckblatt sidebar tint was missing; fixed in
