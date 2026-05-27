@@ -1,12 +1,19 @@
-// stammdaten editor: identity (name, title, kurz) + contact rows
-// photo, schwerpunkt chips and the cover-page preview arrive in phase 2
+// stammdaten editor: identity (name, title, kurz), contact rows, photo,
+// schwerpunkt chip group
 
 import { useApp, useAppDispatch } from "../state/AppContext";
 import { TextField } from "../editor/TextField";
 import { TextAreaField } from "../editor/TextAreaField";
 import { KeyValueList } from "../editor/KeyValueList";
+import { ChipInput } from "../editor/ChipInput";
+import { PhotoField } from "./PhotoField";
 
-export function StammdatenEditor() {
+type Props = {
+  photoUrl: string | null;
+  onPhotoChange: (dataUrl: string | null) => void;
+};
+
+export function StammdatenEditor({ photoUrl, onPhotoChange }: Props) {
   const { stammdaten } = useApp();
   const dispatch = useAppDispatch();
 
@@ -48,6 +55,35 @@ export function StammdatenEditor() {
           onRemove={(id) => dispatch({ type: "STAMM_REMOVE_CONTACT", id })}
           onMove={(id, direction) =>
             dispatch({ type: "STAMM_MOVE_CONTACT", id, direction })
+          }
+        />
+      </section>
+
+      <PhotoField photoUrl={photoUrl} onChange={onPhotoChange} />
+
+      <section className="editor-section">
+        <h2>Schwerpunkt</h2>
+        <TextField
+          label="Heading"
+          value={stammdaten.schwerpunkt.heading}
+          placeholder="schwerpunkt"
+          onChange={(heading) =>
+            dispatch({ type: "STAMM_RENAME_SCHWERPUNKT", heading })
+          }
+        />
+        <ChipInput
+          items={stammdaten.schwerpunkt.items}
+          placeholder="Add focus area"
+          onAdd={(item) => dispatch({ type: "STAMM_ADD_SCHWERPUNKT_ITEM", item })}
+          onRemove={(index) =>
+            dispatch({ type: "STAMM_REMOVE_SCHWERPUNKT_ITEM", index })
+          }
+          onMove={(index, direction) =>
+            dispatch({
+              type: "STAMM_MOVE_SCHWERPUNKT_ITEM",
+              index,
+              direction,
+            })
           }
         />
       </section>

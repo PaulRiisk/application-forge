@@ -9,10 +9,11 @@ import "./preview.css";
 type Props = {
   children: ReactNode;
   zoom?: number;
+  pageClass?: string;
 };
 
 export const PreviewShell = forwardRef<HTMLDivElement, Props>(
-  function PreviewShell({ children, zoom = 1 }, ref) {
+  function PreviewShell({ children, zoom = 1, pageClass }, ref) {
     const { stammdaten } = useApp();
     return (
       <div
@@ -24,7 +25,9 @@ export const PreviewShell = forwardRef<HTMLDivElement, Props>(
           ["--zoom" as string]: zoom,
         }}
       >
-        <main className="page">{children}</main>
+        <main className={`page${pageClass ? ` ${pageClass}` : ""}`}>
+          {children}
+        </main>
       </div>
     );
   },

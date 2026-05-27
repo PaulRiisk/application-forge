@@ -1,10 +1,13 @@
-// top-level component: topbar + active tab body
-// phase 1 only wires the stammdaten editor; other tabs show a placeholder
-// preview pane currently shows a json dump until previews arrive in phase 2+
+// top-level component: topbar + active tab body + preview pane
+// app owns the photo url (kept in memory only, never persisted) and zoom state
+// each tab decides what its preview is; stammdaten owns the cover page
 
 import { useState } from "react";
 import { Topbar, type TabId } from "./topbar/Topbar";
 import { StammdatenEditor } from "./stammdaten/StammdatenEditor";
+import { CoverPagePreview } from "./stammdaten/CoverPagePreview";
+import { PreviewShell } from "./preview/PreviewShell";
+import { PreviewToolbar } from "./preview/PreviewToolbar";
 import { useApp, useAppDispatch } from "./state/AppContext";
 import { clearLocalStorage } from "./state/persistence";
 
@@ -18,16 +21,18 @@ function TabPlaceholder({ label }: { label: string }) {
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabId>("stammdaten");
+
+  // photo lives in app state only, not in the application document
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [zoom, setZoom] = useState(0.75);
+
   const doc = useApp();
   const dispatch = useAppDispatch();
 
-  // phase 1 stubs: real save/load/export wiring lands in later phases
-  const handleSave = () => {
-    window.alert("Save lands in phase 7.");
-  };
-  const handleLoad = () => {
-    window.alert("Load lands in phase 7.");
-  };
+  // phase 1/2 stubs, real wiring lands in later phases
+  const handleSave = () => window.alert("Save lands in phase 7.");
+  const handleLoad = () => window.alert("Load lands in phase 7.");
+  const handleExport = () => window.alert("Export PDF lands in phase 6.");
   const handleReset = () => {
     if (
       !window.confirm(
@@ -37,11 +42,12 @@ function App() {
       return;
     }
     clearLocalStorage();
+    setPhotoUrl(null);
     dispatch({ type: "RESET" });
   };
-  const handleExport = () => {
-    window.alert("Export PDF lands in phase 6.");
-  };
+
+  // fall back to the bundled placeholder if no photo is uploaded
+  const photoSrc = photoUrl ?? `${import.meta.env.BASE_URL}placeholder_cv.png`;
 
   return (
     <div className="app">
@@ -56,7 +62,12 @@ function App() {
 
       <main className="panes">
         <section className="editor-pane" aria-label="Editor">
-          {activeTab === "stammdaten" && <StammdatenEditor />}
+          {activeTab === "stammdaten" && (
+            <StammdatenEditor
+              photoUrl={photoUrl}
+              onPhotoChange={setPhotoUrl}
+            />
+          )}
           {activeTab === "anschreiben" && (
             <TabPlaceholder label="Anschreiben" />
           )}
@@ -67,9 +78,18 @@ function App() {
         </section>
 
         <section className="preview-pane" aria-label="Preview">
-          <pre className="json-dump" aria-label="Document JSON dump">
-            {JSON.stringify(doc, null, 2)}
-          </pre>
+          {activeTab === "stammdaten" ? (
+            <>
+              <PreviewToolbar zoom={zoom} onZoomChange={setZoom} />
+              <PreviewShell zoom={zoom} pageClass="deckblatt">
+                <CoverPagePreview photoUrl={photoSrc} />
+              </PreviewShell>
+            </>
+          ) : (
+            <pre className="json-dump" aria-label="Document JSON dump">
+              {JSON.stringify(doc, null, 2)}
+            </pre>
+          )}
         </section>
       </main>
     </div>

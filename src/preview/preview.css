@@ -1,0 +1,299 @@
+/* document preview styles, shared by every document type
+   tokens are scoped to .af-preview-root so the editor UI stays untouched
+   --accent comes from stammdaten, --zoom from the preview toolbar */
+
+.af-preview-root {
+  color-scheme: light;
+  zoom: var(--zoom, 1);
+  --accent: #2046c6;
+  --page-bg: #f7f8fb;
+  --sidebar-bg: #eef1f6;
+  --text-pri: #0e1320;
+  --text-sec: #3a4254;
+  --text-muted: #7a8197;
+  --rule: #dee2eb;
+  --chip-border: #cdd3df;
+
+  --font-sans:
+    "IBM Plex Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono:
+    "JetBrains Mono", "IBM Plex Mono", ui-monospace, monospace;
+
+  /* A4 at 96dpi */
+  --page-w: 794px;
+  --page-h: 1123px;
+
+  font-family: var(--font-sans);
+  color: var(--text-pri);
+  font-size: 10pt;
+  line-height: 1.55;
+}
+
+/* classic mode: open sans everywhere, no monospace */
+.af-preview-root[data-mode="classic"] {
+  --font-sans: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-mono: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.af-preview-root *,
+.af-preview-root *::before,
+.af-preview-root *::after {
+  box-sizing: border-box;
+}
+
+.af-preview-root h1,
+.af-preview-root h2,
+.af-preview-root h3,
+.af-preview-root p {
+  margin: 0;
+}
+
+/* the A4 page itself */
+.af-preview-root .page {
+  position: relative;
+  width: var(--page-w);
+  min-height: var(--page-h);
+  background: var(--page-bg);
+  display: grid;
+  grid-template-columns: 34% 1fr;
+  box-shadow: 0 8px 32px rgba(14, 19, 32, 0.08);
+}
+
+/* overflow markers, only visible when content grows past A4 height */
+.af-preview-root .page::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--page-h);
+  bottom: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(220, 60, 60, 0.06) 0,
+    rgba(220, 60, 60, 0.06) 6px,
+    rgba(220, 60, 60, 0.12) 6px,
+    rgba(220, 60, 60, 0.12) 12px
+  );
+  border-top: 1px dashed rgba(200, 40, 40, 0.7);
+}
+
+.af-preview-root .page::after {
+  content: "Beyond A4 — won't appear in PDF";
+  position: absolute;
+  left: 50%;
+  top: calc(var(--page-h) + 8px);
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(160, 30, 30, 0.85);
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(200, 40, 40, 0.4);
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+/* hide the overflow markers while exporting so they don't end up in the PDF */
+.af-preview-root.pdf-exporting .page::before,
+.af-preview-root.pdf-exporting .page::after {
+  display: none;
+}
+
+/* sidebar styles shared by every document
+   the cover page only uses photo + contact, the cv and letter sidebar add more */
+.af-preview-root .sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--rule);
+  padding: 56px 28px 56px 56px;
+  color: var(--text-sec);
+}
+
+.af-preview-root .photo {
+  width: 130px;
+  height: 130px;
+  object-fit: cover;
+  object-position: center top;
+  border-radius: 50%;
+  border: 1px solid var(--chip-border);
+  margin-bottom: 22px;
+  display: block;
+}
+
+.af-preview-root .contact {
+  font-size: 9.5px;
+  line-height: 1.9;
+}
+.af-preview-root .contact-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  display: inline-block;
+  width: 64px;
+}
+
+.af-preview-root[data-mode="classic"] .contact-label {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* section labels in sidebar and main share the same visual */
+.af-preview-root .sec-label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  color: var(--accent);
+  margin-top: 28px;
+  margin-bottom: 12px;
+  text-transform: lowercase;
+}
+
+.af-preview-root[data-mode="classic"] .sec-label {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.af-preview-root .caret {
+  color: var(--accent);
+}
+
+/* chip pills used for skills / schwerpunkt */
+.af-preview-root .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.af-preview-root .chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px solid var(--chip-border);
+  border-radius: 3px;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  color: var(--text-sec);
+  background: transparent;
+}
+
+.af-preview-root .mono {
+  font-family: var(--font-mono);
+}
+
+/* ---------- cover page (deckblatt) ---------- */
+
+/* sidebar layout on the cover page differs from the cv:
+   photo top, then a large gap, contact rows pinned to the bottom */
+.af-preview-root .page.deckblatt .cover-sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 56px 28px 56px 56px;
+}
+
+.af-preview-root .page.deckblatt .cover-photo {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  border: 1px solid var(--chip-border);
+  display: block;
+}
+
+.af-preview-root .page.deckblatt .cover-photo.is-hidden {
+  visibility: hidden;
+}
+
+.af-preview-root .page.deckblatt .cover-contact {
+  font-size: 9.5px;
+  line-height: 1.9;
+  color: var(--text-sec);
+}
+
+/* right column of the cover page: kicker + big name on top, mappe on bottom */
+.af-preview-root .page.deckblatt .cover-main {
+  padding: 56px 56px 56px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.af-preview-root .page.deckblatt .cover-kicker {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 60px;
+}
+
+.af-preview-root[data-mode="classic"] .page.deckblatt .cover-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.af-preview-root .page.deckblatt .cover-name {
+  font-size: 56px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  color: var(--text-pri);
+  margin-bottom: 18px;
+}
+
+.af-preview-root .page.deckblatt .cover-subtitle {
+  font-size: 12px;
+  color: var(--text-sec);
+  line-height: 1.5;
+  max-width: 320px;
+}
+
+/* mappe block at the bottom: divider + label + subject + breakdown line */
+.af-preview-root .page.deckblatt .cover-mappe {
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+}
+
+.af-preview-root .page.deckblatt .cover-mappe .sec-label {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.af-preview-root .page.deckblatt .cover-subject {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-pri);
+  margin-bottom: 4px;
+}
+
+.af-preview-root .page.deckblatt .cover-subject-company {
+  font-size: 10.5px;
+  color: var(--text-sec);
+  margin-bottom: 22px;
+}
+
+.af-preview-root .page.deckblatt .cover-mappe-label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  text-transform: lowercase;
+}
+
+.af-preview-root[data-mode="classic"] .page.deckblatt .cover-mappe-label {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.af-preview-root .page.deckblatt .cover-mappe-list {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-sec);
+  letter-spacing: 0.02em;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 18px;
+}
+
+.af-preview-root[data-mode="classic"] .page.deckblatt .cover-mappe-list {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
