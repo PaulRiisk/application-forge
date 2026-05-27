@@ -303,8 +303,7 @@
 /* ---------- anschreiben ---------- */
 
 .af-preview-root .page.anschreiben {
-  /* slightly narrower sidebar than the cv */
-  grid-template-columns: 28% 1fr;
+  grid-template-columns: 34% 1fr;
 }
 
 .af-preview-root .page.anschreiben .letter-sidebar {
@@ -561,4 +560,164 @@
 
 .af-preview-root .bullet::before {
   content: "— ";
+}
+
+/* ---------- about me ---------- */
+
+/* single full-width column, no sidebar tint */
+.af-preview-root .page.aboutme {
+  display: block;
+}
+
+.af-preview-root .about-page {
+  padding: 56px 56px 40px 56px;
+  min-height: var(--page-h);
+  display: flex;
+  flex-direction: column;
+}
+
+.af-preview-root .about-header {
+  position: relative;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 28px;
+}
+
+.af-preview-root .about-kicker {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+.af-preview-root[data-mode="classic"] .about-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.af-preview-root .about-title {
+  font-size: 32px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text-pri);
+}
+
+.af-preview-root .about-author {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--text-muted);
+  text-align: right;
+  line-height: 1.5;
+}
+
+.af-preview-root[data-mode="classic"] .about-author {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* body: 2-column grid */
+.af-preview-root .about-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px 40px;
+  flex: 1;
+}
+
+.af-preview-root .about-col-left,
+.af-preview-root .about-col-right {
+  display: flex;
+  flex-direction: column;
+}
+
+/* spacer between sections in the same column */
+.af-preview-root .sec-label.about-mt {
+  margin-top: 28px;
+}
+
+.af-preview-root .about-para {
+  font-size: 9.5px;
+  color: var(--text-sec);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+
+/* was_ich_baue / außerhalb_des_terminals: 2-col label/body rows */
+.af-preview-root .about-item-list {
+  display: grid;
+  gap: 10px;
+}
+
+.af-preview-root .about-item {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 12px;
+  align-items: baseline;
+  font-size: 9.5px;
+  color: var(--text-sec);
+  line-height: 1.5;
+}
+
+.af-preview-root .about-item-key {
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+}
+
+.af-preview-root[data-mode="classic"] .about-item-key {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.af-preview-root .about-item-body strong {
+  color: var(--text-pri);
+  font-weight: 600;
+}
+
+/* stärken: 2x2 grid of small cards */
+.af-preview-root .about-strengths {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.af-preview-root .about-strength {
+  padding: 12px 14px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--page-bg);
+}
+
+.af-preview-root .about-strength-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.af-preview-root[data-mode="classic"] .about-strength-title {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.af-preview-root .about-strength-body {
+  font-size: 9.5px;
+  color: var(--text-sec);
+  line-height: 1.5;
+}
+
+/* footer line at the very bottom */
+.af-preview-root .about-footer {
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--text-muted);
+}
+
+.af-preview-root[data-mode="classic"] .about-footer {
+  font-family: var(--font-sans);
 }

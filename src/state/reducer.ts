@@ -1,8 +1,11 @@
 // all document mutations live here as a typed action union
 // every action returns a new ApplicationDocument, no in-place mutation
-// stammdaten + letters + cv actions live here; about lands in the next phase
+// all document mutations live here as a typed action union
+// every action returns a new ApplicationDocument, no in-place mutation
 
 import type {
+  AboutDocument,
+  AboutItem,
   ApplicationDocument,
   ContactRow,
   CoverLetter,
@@ -15,6 +18,7 @@ import type {
   SidebarSection,
   SkillGroup,
   Stammdaten,
+  StrengthCard,
   ThemePreset,
 } from "../types";
 import { newId } from "../types";
@@ -95,6 +99,33 @@ export type Action =
       entryId: string;
       direction: Direction;
     }
+  | { type: "ABOUT_SET_WARUM"; value: string }
+  | { type: "ABOUT_ADD_STRENGTH" }
+  | {
+      type: "ABOUT_UPDATE_STRENGTH";
+      id: string;
+      patch: Partial<Omit<StrengthCard, "id">>;
+    }
+  | { type: "ABOUT_REMOVE_STRENGTH"; id: string }
+  | { type: "ABOUT_MOVE_STRENGTH"; id: string; direction: Direction }
+  | { type: "ABOUT_ADD_ITEM"; section: "wasIchBaue" | "ausserhalbDesTerminals" }
+  | {
+      type: "ABOUT_UPDATE_ITEM";
+      section: "wasIchBaue" | "ausserhalbDesTerminals";
+      id: string;
+      patch: Partial<Omit<AboutItem, "id">>;
+    }
+  | {
+      type: "ABOUT_REMOVE_ITEM";
+      section: "wasIchBaue" | "ausserhalbDesTerminals";
+      id: string;
+    }
+  | {
+      type: "ABOUT_MOVE_ITEM";
+      section: "wasIchBaue" | "ausserhalbDesTerminals";
+      id: string;
+      direction: Direction;
+    }
   | { type: "LOAD_DOCUMENT"; doc: ApplicationDocument }
   | { type: "RESET" };
 
@@ -131,6 +162,13 @@ function updateCv(
   patch: Partial<CvDocument>,
 ): ApplicationDocument {
   return { ...state, cv: { ...state.cv, ...patch } };
+}
+
+function updateAbout(
+  state: ApplicationDocument,
+  patch: Partial<AboutDocument>,
+): ApplicationDocument {
+  return { ...state, about: { ...state.about, ...patch } };
 }
 
 export function appReducer(
@@ -514,6 +552,69 @@ export function appReducer(
                 entries: moveById(s.entries, action.entryId, action.direction),
               }
             : s,
+        ),
+      });
+
+    // about: warum_software paragraph
+    case "ABOUT_SET_WARUM":
+      return updateAbout(state, { warumSoftware: action.value });
+
+    // about: stärken cards (2x2 grid)
+    case "ABOUT_ADD_STRENGTH": {
+      const card: StrengthCard = {
+        id: newId(),
+        title: "Card title",
+        body: "Short description.",
+      };
+      return updateAbout(state, {
+        staerken: [...state.about.staerken, card],
+      });
+    }
+    case "ABOUT_UPDATE_STRENGTH":
+      return updateAbout(state, {
+        staerken: state.about.staerken.map((c) =>
+          c.id === action.id ? { ...c, ...action.patch } : c,
+        ),
+      });
+    case "ABOUT_REMOVE_STRENGTH":
+      return updateAbout(state, {
+        staerken: state.about.staerken.filter((c) => c.id !== action.id),
+      });
+    case "ABOUT_MOVE_STRENGTH":
+      return updateAbout(state, {
+        staerken: moveById(state.about.staerken, action.id, action.direction),
+      });
+
+    // about: was_ich_baue and außerhalb_des_terminals share the AboutItem shape
+    case "ABOUT_ADD_ITEM": {
+      const item: AboutItem = {
+        id: newId(),
+        key: "year",
+        title: "Title",
+        body: "Short description.",
+      };
+      return updateAbout(state, {
+        [action.section]: [...state.about[action.section], item],
+      });
+    }
+    case "ABOUT_UPDATE_ITEM":
+      return updateAbout(state, {
+        [action.section]: state.about[action.section].map((it) =>
+          it.id === action.id ? { ...it, ...action.patch } : it,
+        ),
+      });
+    case "ABOUT_REMOVE_ITEM":
+      return updateAbout(state, {
+        [action.section]: state.about[action.section].filter(
+          (it) => it.id !== action.id,
+        ),
+      });
+    case "ABOUT_MOVE_ITEM":
+      return updateAbout(state, {
+        [action.section]: moveById(
+          state.about[action.section],
+          action.id,
+          action.direction,
         ),
       });
 

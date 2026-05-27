@@ -10,18 +10,12 @@ import { LettersTab } from "./letters/LettersTab";
 import { LetterPreview } from "./letters/LetterPreview";
 import { CvEditor } from "./cv/CvEditor";
 import { CvPreview } from "./cv/CvPreview";
+import { AboutEditor } from "./about/AboutEditor";
+import { AboutPreview } from "./about/AboutPreview";
 import { PreviewShell } from "./preview/PreviewShell";
 import { PreviewToolbar } from "./preview/PreviewToolbar";
-import { useApp, useAppDispatch } from "./state/AppContext";
+import { useAppDispatch } from "./state/AppContext";
 import { clearLocalStorage } from "./state/persistence";
-
-function TabPlaceholder({ label }: { label: string }) {
-  return (
-    <div className="tab-placeholder">
-      {label} editor lands in a later phase.
-    </div>
-  );
-}
 
 function App() {
   const [activeTab, setActiveTab] = useState<TabId>("stammdaten");
@@ -31,7 +25,6 @@ function App() {
   const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
   const [zoom, setZoom] = useState(0.75);
 
-  const doc = useApp();
   const dispatch = useAppDispatch();
 
   // phase 1/2 stubs, real wiring lands in later phases
@@ -81,7 +74,7 @@ function App() {
             />
           )}
           {activeTab === "lebenslauf" && <CvEditor />}
-          {activeTab === "about" && <TabPlaceholder label="About Me" />}
+          {activeTab === "about" && <AboutEditor />}
         </section>
 
         <section className="preview-pane" aria-label="Preview">
@@ -110,9 +103,12 @@ function App() {
             </>
           )}
           {activeTab === "about" && (
-            <pre className="json-dump" aria-label="Document JSON dump">
-              {JSON.stringify(doc, null, 2)}
-            </pre>
+            <>
+              <PreviewToolbar zoom={zoom} onZoomChange={setZoom} />
+              <PreviewShell zoom={zoom} pageClass="aboutme">
+                <AboutPreview />
+              </PreviewShell>
+            </>
           )}
         </section>
       </main>
