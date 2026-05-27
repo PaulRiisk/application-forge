@@ -8,6 +8,8 @@ import { StammdatenEditor } from "./stammdaten/StammdatenEditor";
 import { CoverPagePreview } from "./stammdaten/CoverPagePreview";
 import { LettersTab } from "./letters/LettersTab";
 import { LetterPreview } from "./letters/LetterPreview";
+import { CvEditor } from "./cv/CvEditor";
+import { CvPreview } from "./cv/CvPreview";
 import { PreviewShell } from "./preview/PreviewShell";
 import { PreviewToolbar } from "./preview/PreviewToolbar";
 import { useApp, useAppDispatch } from "./state/AppContext";
@@ -78,9 +80,7 @@ function App() {
               onSignatureChange={setSignatureUrl}
             />
           )}
-          {activeTab === "lebenslauf" && (
-            <TabPlaceholder label="Lebenslauf" />
-          )}
+          {activeTab === "lebenslauf" && <CvEditor />}
           {activeTab === "about" && <TabPlaceholder label="About Me" />}
         </section>
 
@@ -101,7 +101,15 @@ function App() {
               </PreviewShell>
             </>
           )}
-          {(activeTab === "lebenslauf" || activeTab === "about") && (
+          {activeTab === "lebenslauf" && (
+            <>
+              <PreviewToolbar zoom={zoom} onZoomChange={setZoom} />
+              <PreviewShell zoom={zoom} pageClass="lebenslauf">
+                <CvPreview photoUrl={photoSrc} />
+              </PreviewShell>
+            </>
+          )}
+          {activeTab === "about" && (
             <pre className="json-dump" aria-label="Document JSON dump">
               {JSON.stringify(doc, null, 2)}
             </pre>

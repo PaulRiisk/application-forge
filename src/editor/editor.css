@@ -125,6 +125,69 @@
   border-style: solid;
 }
 
+/* skill group / sidebar section container in the cv editor */
+.skill-group {
+  border: 1px solid var(--ui-border);
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: var(--ui-surface-soft);
+}
+
+.skill-group-header {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.skill-group-header input[type="text"] {
+  font: inherit;
+  padding: 4px 6px;
+  border: 1px solid var(--ui-border-strong);
+  border-radius: 4px;
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  flex: 1;
+}
+
+/* entry editor (one experience/education item) */
+.entry-editor {
+  border: 1px solid var(--ui-border);
+  border-radius: 4px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: var(--ui-surface-soft);
+}
+
+.entry-editor .field {
+  margin-bottom: 8px;
+}
+
+.entry-header {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.entry-section-header {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.entry-section-header input[type="text"] {
+  font: inherit;
+  padding: 4px 6px;
+  border: 1px solid var(--ui-border-strong);
+  border-radius: 4px;
+  background: var(--ui-surface);
+  color: var(--ui-text);
+  flex: 1;
+}
+
 /* chip group editor: heading input + add row + chip list */
 .chip-input-row {
   display: flex;

@@ -454,3 +454,111 @@
   margin-top: 4px;
   color: var(--text-muted);
 }
+
+/* ---------- lebenslauf ---------- */
+
+.af-preview-root .page.lebenslauf {
+  grid-template-columns: 34% 1fr;
+}
+
+.af-preview-root .page.lebenslauf .cv-sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--rule);
+  padding: 56px 28px 56px 56px;
+  color: var(--text-sec);
+}
+
+.af-preview-root .cv-name {
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  color: var(--text-pri);
+}
+
+.af-preview-root .cv-title {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent);
+  margin-top: 8px;
+}
+
+.af-preview-root[data-mode="classic"] .cv-title {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.af-preview-root .cv-contact {
+  margin-top: 28px;
+}
+
+.af-preview-root .cv-profile {
+  text-wrap: pretty;
+  font-size: 9.5px;
+  color: var(--text-sec);
+}
+
+/* sidebar key:value rows used by sidebar sections (languages, etc.) */
+.af-preview-root .lang {
+  font-size: 9.5px;
+  margin-bottom: 2px;
+}
+
+.af-preview-root .lang-key {
+  color: var(--text-muted);
+}
+
+/* main column with experience and education entries */
+.af-preview-root .page.lebenslauf .cv-main {
+  padding: 56px 56px 56px 32px;
+}
+
+.af-preview-root .main-sec {
+  text-transform: none;
+}
+.af-preview-root .main-sec.mt {
+  margin-top: 28px;
+}
+.af-preview-root .cv-main .main-sec:first-child {
+  margin-top: 0;
+}
+
+.af-preview-root .exp {
+  margin-bottom: 22px;
+  padding-left: 14px;
+  border-left: 1px solid var(--rule);
+}
+
+.af-preview-root .exp-date {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.af-preview-root[data-mode="classic"] .exp-date {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.af-preview-root .exp-role {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-pri);
+}
+
+.af-preview-root .exp-company {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin: 2px 0 6px;
+}
+
+.af-preview-root .bullet {
+  font-size: 9.5px;
+  margin: 3px 0;
+  color: var(--text-sec);
+}
+
+.af-preview-root .bullet::before {
+  content: "— ";
+}
