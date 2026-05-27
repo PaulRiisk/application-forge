@@ -83,7 +83,7 @@ export function Topbar({
         aria-label={isDe ? t("topbar.locale.toEn") : t("topbar.locale.toDe")}
         title={isDe ? t("topbar.locale.toEn") : t("topbar.locale.toDe")}
       >
-        {isDe ? t("topbar.locale.en") : t("topbar.locale.de")}
+        {isDe ? t("topbar.locale.de") : t("topbar.locale.en")}
       </button>
       <button
         type="button"
