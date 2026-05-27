@@ -6,6 +6,8 @@ import { useState } from "react";
 import { Topbar, type TabId } from "./topbar/Topbar";
 import { StammdatenEditor } from "./stammdaten/StammdatenEditor";
 import { CoverPagePreview } from "./stammdaten/CoverPagePreview";
+import { LettersTab } from "./letters/LettersTab";
+import { LetterPreview } from "./letters/LetterPreview";
 import { PreviewShell } from "./preview/PreviewShell";
 import { PreviewToolbar } from "./preview/PreviewToolbar";
 import { useApp, useAppDispatch } from "./state/AppContext";
@@ -22,8 +24,9 @@ function TabPlaceholder({ label }: { label: string }) {
 function App() {
   const [activeTab, setActiveTab] = useState<TabId>("stammdaten");
 
-  // photo lives in app state only, not in the application document
+  // photo and signature live in app state only, never in the document
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
+  const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
   const [zoom, setZoom] = useState(0.75);
 
   const doc = useApp();
@@ -43,6 +46,7 @@ function App() {
     }
     clearLocalStorage();
     setPhotoUrl(null);
+    setSignatureUrl(null);
     dispatch({ type: "RESET" });
   };
 
@@ -69,7 +73,10 @@ function App() {
             />
           )}
           {activeTab === "anschreiben" && (
-            <TabPlaceholder label="Anschreiben" />
+            <LettersTab
+              signatureUrl={signatureUrl}
+              onSignatureChange={setSignatureUrl}
+            />
           )}
           {activeTab === "lebenslauf" && (
             <TabPlaceholder label="Lebenslauf" />
@@ -78,14 +85,23 @@ function App() {
         </section>
 
         <section className="preview-pane" aria-label="Preview">
-          {activeTab === "stammdaten" ? (
+          {activeTab === "stammdaten" && (
             <>
               <PreviewToolbar zoom={zoom} onZoomChange={setZoom} />
               <PreviewShell zoom={zoom} pageClass="deckblatt">
                 <CoverPagePreview photoUrl={photoSrc} />
               </PreviewShell>
             </>
-          ) : (
+          )}
+          {activeTab === "anschreiben" && (
+            <>
+              <PreviewToolbar zoom={zoom} onZoomChange={setZoom} />
+              <PreviewShell zoom={zoom} pageClass="anschreiben">
+                <LetterPreview signatureUrl={signatureUrl} />
+              </PreviewShell>
+            </>
+          )}
+          {(activeTab === "lebenslauf" || activeTab === "about") && (
             <pre className="json-dump" aria-label="Document JSON dump">
               {JSON.stringify(doc, null, 2)}
             </pre>

@@ -1,12 +1,19 @@
 // all document mutations live here as a typed action union
 // every action returns a new ApplicationDocument, no in-place mutation
-// phase 1 covers stammdaten actions only; later phases extend the union
+// stammdaten + letters + cv actions live here; about lands in the next phase
 
 import type {
   ApplicationDocument,
   ContactRow,
+  CoverLetter,
+  CvDocument,
   Direction,
+  Entry,
+  EntrySection,
   LayoutMode,
+  SidebarRow,
+  SidebarSection,
+  SkillGroup,
   Stammdaten,
   ThemePreset,
 } from "../types";
@@ -33,6 +40,61 @@ export type Action =
   | { type: "STAMM_ADD_SCHWERPUNKT_ITEM"; item: string }
   | { type: "STAMM_REMOVE_SCHWERPUNKT_ITEM"; index: number }
   | { type: "STAMM_MOVE_SCHWERPUNKT_ITEM"; index: number; direction: Direction }
+  | { type: "LETTERS_ADD" }
+  | { type: "LETTERS_DUPLICATE"; id: string }
+  | { type: "LETTERS_REMOVE"; id: string }
+  | { type: "LETTERS_RENAME"; id: string; label: string }
+  | { type: "LETTERS_SET_ACTIVE"; id: string }
+  | { type: "LETTER_UPDATE"; patch: Partial<Omit<CoverLetter, "id">> }
+  | { type: "CV_SET_PROFILE"; value: string }
+  | { type: "CV_ADD_SKILL_GROUP" }
+  | { type: "CV_RENAME_SKILL_GROUP"; id: string; heading: string }
+  | { type: "CV_REMOVE_SKILL_GROUP"; id: string }
+  | { type: "CV_MOVE_SKILL_GROUP"; id: string; direction: Direction }
+  | { type: "CV_ADD_SKILL"; groupId: string; item: string }
+  | { type: "CV_REMOVE_SKILL"; groupId: string; index: number }
+  | {
+      type: "CV_MOVE_SKILL";
+      groupId: string;
+      index: number;
+      direction: Direction;
+    }
+  | { type: "CV_ADD_SIDEBAR_SECTION" }
+  | { type: "CV_RENAME_SIDEBAR_SECTION"; id: string; heading: string }
+  | { type: "CV_REMOVE_SIDEBAR_SECTION"; id: string }
+  | { type: "CV_MOVE_SIDEBAR_SECTION"; id: string; direction: Direction }
+  | { type: "CV_ADD_SIDEBAR_ROW"; sectionId: string }
+  | {
+      type: "CV_UPDATE_SIDEBAR_ROW";
+      sectionId: string;
+      rowId: string;
+      patch: Partial<Omit<SidebarRow, "id">>;
+    }
+  | { type: "CV_REMOVE_SIDEBAR_ROW"; sectionId: string; rowId: string }
+  | {
+      type: "CV_MOVE_SIDEBAR_ROW";
+      sectionId: string;
+      rowId: string;
+      direction: Direction;
+    }
+  | { type: "CV_ADD_ENTRY_SECTION" }
+  | { type: "CV_RENAME_ENTRY_SECTION"; id: string; heading: string }
+  | { type: "CV_REMOVE_ENTRY_SECTION"; id: string }
+  | { type: "CV_MOVE_ENTRY_SECTION"; id: string; direction: Direction }
+  | { type: "CV_ADD_ENTRY"; sectionId: string }
+  | {
+      type: "CV_UPDATE_ENTRY";
+      sectionId: string;
+      entryId: string;
+      patch: Partial<Omit<Entry, "id">>;
+    }
+  | { type: "CV_REMOVE_ENTRY"; sectionId: string; entryId: string }
+  | {
+      type: "CV_MOVE_ENTRY";
+      sectionId: string;
+      entryId: string;
+      direction: Direction;
+    }
   | { type: "LOAD_DOCUMENT"; doc: ApplicationDocument }
   | { type: "RESET" };
 
@@ -61,6 +123,14 @@ function updateStammdaten(
   patch: Partial<Stammdaten>,
 ): ApplicationDocument {
   return { ...state, stammdaten: { ...state.stammdaten, ...patch } };
+}
+
+// same idea for cv branches
+function updateCv(
+  state: ApplicationDocument,
+  patch: Partial<CvDocument>,
+): ApplicationDocument {
+  return { ...state, cv: { ...state.cv, ...patch } };
 }
 
 export function appReducer(
@@ -147,6 +217,304 @@ export function appReducer(
             action.direction,
           ),
         },
+      });
+
+    // letters: add a fresh blank, switch active to it
+    case "LETTERS_ADD": {
+      const letter: CoverLetter = {
+        id: newId(),
+        label: "Untitled letter",
+        company: "Company GmbH",
+        recipient: ["Company GmbH", "Recipient Name", "Street 1", "12345 City"],
+        cityOverride: null,
+        date: new Date().toISOString().slice(0, 10),
+        subject: "Subject line",
+        reference: "",
+        body: "",
+      };
+      return {
+        ...state,
+        letters: {
+          items: [...state.letters.items, letter],
+          activeId: letter.id,
+        },
+      };
+    }
+    // letters: duplicate the named entry, switch active to the copy
+    case "LETTERS_DUPLICATE": {
+      const source = state.letters.items.find((l) => l.id === action.id);
+      if (!source) return state;
+      const copy: CoverLetter = {
+        ...source,
+        id: newId(),
+        label: `${source.label} copy`,
+      };
+      const sourceIdx = state.letters.items.findIndex((l) => l.id === action.id);
+      const next = state.letters.items.slice();
+      next.splice(sourceIdx + 1, 0, copy);
+      return { ...state, letters: { items: next, activeId: copy.id } };
+    }
+    // letters: remove; if the active letter is removed, fall back to the first
+    // remaining letter, or create a fresh empty one so the list is never empty
+    case "LETTERS_REMOVE": {
+      const remaining = state.letters.items.filter((l) => l.id !== action.id);
+      if (remaining.length === 0) {
+        const fresh: CoverLetter = {
+          id: newId(),
+          label: "Untitled letter",
+          company: "Company GmbH",
+          recipient: [
+            "Company GmbH",
+            "Recipient Name",
+            "Street 1",
+            "12345 City",
+          ],
+          cityOverride: null,
+          date: new Date().toISOString().slice(0, 10),
+          subject: "Subject line",
+          reference: "",
+          body: "",
+        };
+        return {
+          ...state,
+          letters: { items: [fresh], activeId: fresh.id },
+        };
+      }
+      const activeId =
+        state.letters.activeId === action.id
+          ? remaining[0].id
+          : state.letters.activeId;
+      return { ...state, letters: { items: remaining, activeId } };
+    }
+    case "LETTERS_RENAME":
+      return {
+        ...state,
+        letters: {
+          ...state.letters,
+          items: state.letters.items.map((l) =>
+            l.id === action.id ? { ...l, label: action.label } : l,
+          ),
+        },
+      };
+    case "LETTERS_SET_ACTIVE":
+      return { ...state, letters: { ...state.letters, activeId: action.id } };
+
+    // patch lands on the active letter only, never on others
+    case "LETTER_UPDATE":
+      return {
+        ...state,
+        letters: {
+          ...state.letters,
+          items: state.letters.items.map((l) =>
+            l.id === state.letters.activeId ? { ...l, ...action.patch } : l,
+          ),
+        },
+      };
+
+    // cv profile blurb (separate from stammdaten kurz)
+    case "CV_SET_PROFILE":
+      return updateCv(state, { profile: action.value });
+
+    // cv skill groups
+    case "CV_ADD_SKILL_GROUP": {
+      const group: SkillGroup = { id: newId(), heading: "new group", items: [] };
+      return updateCv(state, { skillGroups: [...state.cv.skillGroups, group] });
+    }
+    case "CV_RENAME_SKILL_GROUP":
+      return updateCv(state, {
+        skillGroups: state.cv.skillGroups.map((g) =>
+          g.id === action.id ? { ...g, heading: action.heading } : g,
+        ),
+      });
+    case "CV_REMOVE_SKILL_GROUP":
+      return updateCv(state, {
+        skillGroups: state.cv.skillGroups.filter((g) => g.id !== action.id),
+      });
+    case "CV_MOVE_SKILL_GROUP":
+      return updateCv(state, {
+        skillGroups: moveById(state.cv.skillGroups, action.id, action.direction),
+      });
+
+    case "CV_ADD_SKILL": {
+      const item = action.item.trim();
+      if (!item) return state;
+      return updateCv(state, {
+        skillGroups: state.cv.skillGroups.map((g) =>
+          g.id === action.groupId ? { ...g, items: [...g.items, item] } : g,
+        ),
+      });
+    }
+    case "CV_REMOVE_SKILL":
+      return updateCv(state, {
+        skillGroups: state.cv.skillGroups.map((g) =>
+          g.id === action.groupId
+            ? { ...g, items: g.items.filter((_, i) => i !== action.index) }
+            : g,
+        ),
+      });
+    case "CV_MOVE_SKILL":
+      return updateCv(state, {
+        skillGroups: state.cv.skillGroups.map((g) =>
+          g.id === action.groupId
+            ? { ...g, items: move(g.items, action.index, action.direction) }
+            : g,
+        ),
+      });
+
+    // cv sidebar sections (languages, etc.)
+    case "CV_ADD_SIDEBAR_SECTION": {
+      const section: SidebarSection = {
+        id: newId(),
+        heading: "new section",
+        rows: [],
+      };
+      return updateCv(state, {
+        sidebarSections: [...state.cv.sidebarSections, section],
+      });
+    }
+    case "CV_RENAME_SIDEBAR_SECTION":
+      return updateCv(state, {
+        sidebarSections: state.cv.sidebarSections.map((s) =>
+          s.id === action.id ? { ...s, heading: action.heading } : s,
+        ),
+      });
+    case "CV_REMOVE_SIDEBAR_SECTION":
+      return updateCv(state, {
+        sidebarSections: state.cv.sidebarSections.filter(
+          (s) => s.id !== action.id,
+        ),
+      });
+    case "CV_MOVE_SIDEBAR_SECTION":
+      return updateCv(state, {
+        sidebarSections: moveById(
+          state.cv.sidebarSections,
+          action.id,
+          action.direction,
+        ),
+      });
+
+    case "CV_ADD_SIDEBAR_ROW":
+      return updateCv(state, {
+        sidebarSections: state.cv.sidebarSections.map((s) =>
+          s.id === action.sectionId
+            ? {
+                ...s,
+                rows: [...s.rows, { id: newId(), label: "", value: "" }],
+              }
+            : s,
+        ),
+      });
+    case "CV_UPDATE_SIDEBAR_ROW":
+      return updateCv(state, {
+        sidebarSections: state.cv.sidebarSections.map((s) =>
+          s.id === action.sectionId
+            ? {
+                ...s,
+                rows: s.rows.map((r) =>
+                  r.id === action.rowId ? { ...r, ...action.patch } : r,
+                ),
+              }
+            : s,
+        ),
+      });
+    case "CV_REMOVE_SIDEBAR_ROW":
+      return updateCv(state, {
+        sidebarSections: state.cv.sidebarSections.map((s) =>
+          s.id === action.sectionId
+            ? { ...s, rows: s.rows.filter((r) => r.id !== action.rowId) }
+            : s,
+        ),
+      });
+    case "CV_MOVE_SIDEBAR_ROW":
+      return updateCv(state, {
+        sidebarSections: state.cv.sidebarSections.map((s) =>
+          s.id === action.sectionId
+            ? { ...s, rows: moveById(s.rows, action.rowId, action.direction) }
+            : s,
+        ),
+      });
+
+    // cv entry sections (experience, education, ...)
+    case "CV_ADD_ENTRY_SECTION": {
+      const section: EntrySection = {
+        id: newId(),
+        heading: "other",
+        entries: [],
+      };
+      return updateCv(state, {
+        entrySections: [...state.cv.entrySections, section],
+      });
+    }
+    case "CV_RENAME_ENTRY_SECTION":
+      return updateCv(state, {
+        entrySections: state.cv.entrySections.map((s) =>
+          s.id === action.id ? { ...s, heading: action.heading } : s,
+        ),
+      });
+    case "CV_REMOVE_ENTRY_SECTION":
+      return updateCv(state, {
+        entrySections: state.cv.entrySections.filter((s) => s.id !== action.id),
+      });
+    case "CV_MOVE_ENTRY_SECTION":
+      return updateCv(state, {
+        entrySections: moveById(
+          state.cv.entrySections,
+          action.id,
+          action.direction,
+        ),
+      });
+
+    case "CV_ADD_ENTRY":
+      return updateCv(state, {
+        entrySections: state.cv.entrySections.map((s) =>
+          s.id === action.sectionId
+            ? {
+                ...s,
+                entries: [
+                  ...s.entries,
+                  {
+                    id: newId(),
+                    period: "Period",
+                    title: "Role",
+                    place: "Organization · City",
+                    bullets: [],
+                  },
+                ],
+              }
+            : s,
+        ),
+      });
+    case "CV_UPDATE_ENTRY":
+      return updateCv(state, {
+        entrySections: state.cv.entrySections.map((s) =>
+          s.id === action.sectionId
+            ? {
+                ...s,
+                entries: s.entries.map((e) =>
+                  e.id === action.entryId ? { ...e, ...action.patch } : e,
+                ),
+              }
+            : s,
+        ),
+      });
+    case "CV_REMOVE_ENTRY":
+      return updateCv(state, {
+        entrySections: state.cv.entrySections.map((s) =>
+          s.id === action.sectionId
+            ? { ...s, entries: s.entries.filter((e) => e.id !== action.entryId) }
+            : s,
+        ),
+      });
+    case "CV_MOVE_ENTRY":
+      return updateCv(state, {
+        entrySections: state.cv.entrySections.map((s) =>
+          s.id === action.sectionId
+            ? {
+                ...s,
+                entries: moveById(s.entries, action.entryId, action.direction),
+              }
+            : s,
+        ),
       });
 
     case "LOAD_DOCUMENT":

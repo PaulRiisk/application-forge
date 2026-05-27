@@ -186,6 +186,8 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--rule);
   padding: 56px 28px 56px 56px;
 }
 
@@ -296,4 +298,159 @@
 .af-preview-root[data-mode="classic"] .page.deckblatt .cover-mappe-list {
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+/* ---------- anschreiben ---------- */
+
+.af-preview-root .page.anschreiben {
+  /* slightly narrower sidebar than the cv */
+  grid-template-columns: 28% 1fr;
+}
+
+.af-preview-root .page.anschreiben .letter-sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--rule);
+  padding: 56px 28px 56px 56px;
+  color: var(--text-sec);
+}
+
+.af-preview-root .letter-name {
+  font-size: 38px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  color: var(--text-pri);
+}
+
+.af-preview-root .letter-kicker {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent);
+  margin-top: 8px;
+}
+
+.af-preview-root[data-mode="classic"] .letter-kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.af-preview-root .letter-contact {
+  margin-top: 28px;
+}
+
+.af-preview-root .letter-kurz {
+  font-size: 9.5px;
+  color: var(--text-sec);
+  text-wrap: pretty;
+}
+
+/* main column */
+.af-preview-root .page.anschreiben .letter-main {
+  padding: 56px 56px 56px 32px;
+  display: flex;
+  flex-direction: column;
+}
+
+.af-preview-root .letter-top-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  margin-bottom: 32px;
+  font-size: 9.5px;
+  color: var(--text-sec);
+  line-height: 1.6;
+}
+
+.af-preview-root .letter-mini-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.af-preview-root[data-mode="classic"] .letter-mini-label {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.af-preview-root .letter-date {
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+}
+
+.af-preview-root[data-mode="classic"] .letter-date {
+  font-family: var(--font-sans);
+}
+
+.af-preview-root .letter-subject-block {
+  margin-bottom: 22px;
+}
+
+.af-preview-root .letter-subject-block .sec-label {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.af-preview-root .letter-subject {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-pri);
+  margin-bottom: 4px;
+}
+
+.af-preview-root .letter-reference {
+  font-size: 9.5px;
+  color: var(--text-muted);
+}
+
+.af-preview-root .letter-body {
+  font-size: 10pt;
+  color: var(--text-sec);
+  line-height: 1.65;
+}
+
+.af-preview-root .letter-body p {
+  margin: 0 0 12px;
+  text-wrap: pretty;
+}
+
+.af-preview-root .letter-body ul {
+  margin: 0 0 12px;
+  padding-left: 16px;
+}
+
+.af-preview-root .letter-body li {
+  margin: 2px 0;
+}
+
+.af-preview-root .letter-signature {
+  max-width: 200px;
+  max-height: 70px;
+  margin-top: 8px;
+}
+
+.af-preview-root .letter-signed {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-pri);
+  margin-top: 18px;
+}
+
+.af-preview-root .letter-attachments {
+  margin-top: auto;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--text-sec);
+}
+
+.af-preview-root[data-mode="classic"] .letter-attachments {
+  font-family: var(--font-sans);
+}
+
+.af-preview-root .letter-attachments-list {
+  margin-top: 4px;
+  color: var(--text-muted);
 }
