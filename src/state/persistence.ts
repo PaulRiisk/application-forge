@@ -151,22 +151,21 @@ export function downloadJson(doc: ApplicationDocument): void {
 }
 
 // read a user-picked JSON file and validate it as an application document
+// rejects with one of the "app.load.*" string keys so the caller can localize
 export function readJsonFile(file: File): Promise<ApplicationDocument> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onerror = () => reject(new Error("Could not read file."));
+    reader.onerror = () => reject(new Error("app.load.readFailed"));
     reader.onload = () => {
       try {
         const parsed = JSON.parse(reader.result as string);
         if (!isValidDocument(parsed)) {
-          reject(
-            new Error("File is not a valid application-forge document (version 1)."),
-          );
+          reject(new Error("app.load.invalidDoc"));
           return;
         }
         resolve(regenerateIds(parsed));
       } catch {
-        reject(new Error("File is not valid JSON."));
+        reject(new Error("app.load.invalidJson"));
       }
     };
     reader.readAsText(file);

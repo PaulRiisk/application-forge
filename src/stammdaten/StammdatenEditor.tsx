@@ -2,6 +2,7 @@
 // schwerpunkt chip group
 
 import { useApp, useAppDispatch } from "../state/AppContext";
+import { useT } from "../i18n/LocaleContext";
 import { TextField } from "../editor/TextField";
 import { TextAreaField } from "../editor/TextAreaField";
 import { KeyValueList } from "../editor/KeyValueList";
@@ -16,38 +17,39 @@ type Props = {
 export function StammdatenEditor({ photoUrl, onPhotoChange }: Props) {
   const { stammdaten } = useApp();
   const dispatch = useAppDispatch();
+  const t = useT();
 
   return (
     <div className="editor">
       <section className="editor-section">
-        <h2>Identity</h2>
+        <h2>{t("stamm.section.identity")}</h2>
         <TextField
-          label="Name"
+          label={t("stamm.field.name")}
           value={stammdaten.name}
-          placeholder="Name Surname"
+          placeholder={t("stamm.field.name.placeholder")}
           onChange={(value) => dispatch({ type: "STAMM_SET_NAME", value })}
         />
         <TextField
-          label="Title / subtitle"
+          label={t("stamm.field.title")}
           value={stammdaten.title}
-          placeholder="your.title / role"
+          placeholder={t("stamm.field.title.placeholder")}
           onChange={(value) => dispatch({ type: "STAMM_SET_TITLE", value })}
         />
         <TextAreaField
-          label="Short profile"
+          label={t("stamm.field.kurz")}
           value={stammdaten.kurz}
-          placeholder="One or two sentences about your background and focus."
+          placeholder={t("stamm.field.kurz.placeholder")}
           onChange={(value) => dispatch({ type: "STAMM_SET_KURZ", value })}
         />
       </section>
 
       <section className="editor-section">
-        <h2>Contact</h2>
+        <h2>{t("stamm.section.contact")}</h2>
         <KeyValueList
           rows={stammdaten.contact}
-          labelPlaceholder="label"
-          valuePlaceholder="value"
-          addLabel="Add contact row"
+          labelPlaceholder={t("stamm.contact.labelPlaceholder")}
+          valuePlaceholder={t("stamm.contact.valuePlaceholder")}
+          addLabel={t("stamm.contact.add")}
           onAdd={() => dispatch({ type: "STAMM_ADD_CONTACT" })}
           onUpdate={(id, patch) =>
             dispatch({ type: "STAMM_UPDATE_CONTACT", id, patch })
@@ -62,18 +64,18 @@ export function StammdatenEditor({ photoUrl, onPhotoChange }: Props) {
       <PhotoField photoUrl={photoUrl} onChange={onPhotoChange} />
 
       <section className="editor-section">
-        <h2>Schwerpunkt</h2>
+        <h2>{t("stamm.section.schwerpunkt")}</h2>
         <TextField
-          label="Heading"
+          label={t("stamm.schwerpunkt.heading")}
           value={stammdaten.schwerpunkt.heading}
-          placeholder="schwerpunkt"
+          placeholder={t("stamm.schwerpunkt.headingPlaceholder")}
           onChange={(heading) =>
             dispatch({ type: "STAMM_RENAME_SCHWERPUNKT", heading })
           }
         />
         <ChipInput
           items={stammdaten.schwerpunkt.items}
-          placeholder="Add focus area"
+          placeholder={t("stamm.schwerpunkt.addPlaceholder")}
           onAdd={(item) => dispatch({ type: "STAMM_ADD_SCHWERPUNKT_ITEM", item })}
           onRemove={(index) =>
             dispatch({ type: "STAMM_REMOVE_SCHWERPUNKT_ITEM", index })

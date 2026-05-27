@@ -5,6 +5,7 @@
 // - außerhalb_des_terminals: same shape as was_ich_baue
 
 import { useApp, useAppDispatch } from "../state/AppContext";
+import { useT } from "../i18n/LocaleContext";
 import type { AboutItem, Direction, StrengthCard } from "../types";
 import { TextAreaField } from "../editor/TextAreaField";
 import { TextField } from "../editor/TextField";
@@ -26,6 +27,7 @@ function StrengthEditor({
   onMove: (direction: Direction) => void;
   onRemove: () => void;
 }) {
+  const t = useT();
   return (
     <div className="entry-editor">
       <div className="entry-header">
@@ -34,7 +36,7 @@ function StrengthEditor({
           className="row-btn"
           disabled={isFirst}
           onClick={() => onMove("up")}
-          title="Move up"
+          title={t("row.moveUp")}
         >
           ↑
         </button>
@@ -43,7 +45,7 @@ function StrengthEditor({
           className="row-btn"
           disabled={isLast}
           onClick={() => onMove("down")}
-          title="Move down"
+          title={t("row.moveDown")}
         >
           ↓
         </button>
@@ -51,21 +53,21 @@ function StrengthEditor({
           type="button"
           className="row-btn danger"
           onClick={onRemove}
-          title="Remove card"
+          title={t("about.staerken.removeTitle")}
         >
-          × Remove
+          {t("cv.entry.remove")}
         </button>
       </div>
       <TextField
-        label="Title"
+        label={t("about.staerken.title")}
         value={card.title}
-        placeholder="systematisch"
+        placeholder={t("about.staerken.titlePlaceholder")}
         onChange={(title) => onUpdate({ title })}
       />
       <TextAreaField
-        label="Body"
+        label={t("about.staerken.body")}
         value={card.body}
-        placeholder="One or two short sentences."
+        placeholder={t("about.staerken.bodyPlaceholder")}
         rows={2}
         onChange={(body) => onUpdate({ body })}
       />
@@ -88,6 +90,7 @@ function ItemEditor({
   onMove: (direction: Direction) => void;
   onRemove: () => void;
 }) {
+  const t = useT();
   return (
     <div className="entry-editor">
       <div className="entry-header">
@@ -96,7 +99,7 @@ function ItemEditor({
           className="row-btn"
           disabled={isFirst}
           onClick={() => onMove("up")}
-          title="Move up"
+          title={t("row.moveUp")}
         >
           ↑
         </button>
@@ -105,7 +108,7 @@ function ItemEditor({
           className="row-btn"
           disabled={isLast}
           onClick={() => onMove("down")}
-          title="Move down"
+          title={t("row.moveDown")}
         >
           ↓
         </button>
@@ -113,27 +116,27 @@ function ItemEditor({
           type="button"
           className="row-btn danger"
           onClick={onRemove}
-          title="Remove item"
+          title={t("about.item.removeTitle")}
         >
-          × Remove
+          {t("cv.entry.remove")}
         </button>
       </div>
       <TextField
-        label="Key (year or category)"
+        label={t("about.item.key")}
         value={item.key}
-        placeholder="2025"
+        placeholder={t("about.item.keyPlaceholder")}
         onChange={(key) => onUpdate({ key })}
       />
       <TextField
-        label="Title"
+        label={t("about.item.title")}
         value={item.title}
-        placeholder="Project title"
+        placeholder={t("about.item.titlePlaceholder")}
         onChange={(title) => onUpdate({ title })}
       />
       <TextAreaField
-        label="Body"
+        label={t("about.item.body")}
         value={item.body}
-        placeholder="One short sentence."
+        placeholder={t("about.item.bodyPlaceholder")}
         rows={2}
         onChange={(body) => onUpdate({ body })}
       />
@@ -150,6 +153,7 @@ function ItemListSection({
 }) {
   const { about } = useApp();
   const dispatch = useAppDispatch();
+  const t = useT();
   const items = about[section];
   return (
     <section className="editor-section">
@@ -181,7 +185,7 @@ function ItemListSection({
         className="add-btn"
         onClick={() => dispatch({ type: "ABOUT_ADD_ITEM", section })}
       >
-        + Add item
+        {t("about.item.add")}
       </button>
     </section>
   );
@@ -190,22 +194,23 @@ function ItemListSection({
 export function AboutEditor() {
   const { about } = useApp();
   const dispatch = useAppDispatch();
+  const t = useT();
 
   return (
     <div className="editor">
       <section className="editor-section">
-        <h2>warum_software</h2>
+        <h2>{t("about.section.warum")}</h2>
         <TextAreaField
-          label="Paragraph"
+          label={t("about.warum.label")}
           value={about.warumSoftware}
-          placeholder="What pulled you into software."
+          placeholder={t("about.warum.placeholder")}
           rows={5}
           onChange={(value) => dispatch({ type: "ABOUT_SET_WARUM", value })}
         />
       </section>
 
       <section className="editor-section">
-        <h2>stärken (2×2 cards)</h2>
+        <h2>{t("about.section.staerken")}</h2>
         {about.staerken.map((card, i) => (
           <StrengthEditor
             key={card.id}
@@ -232,13 +237,16 @@ export function AboutEditor() {
           className="add-btn"
           onClick={() => dispatch({ type: "ABOUT_ADD_STRENGTH" })}
         >
-          + Add card
+          {t("about.staerken.add")}
         </button>
       </section>
 
-      <ItemListSection heading="was_ich_baue" section="wasIchBaue" />
       <ItemListSection
-        heading="außerhalb_des_terminals"
+        heading={t("about.section.wasIchBaue")}
+        section="wasIchBaue"
+      />
+      <ItemListSection
+        heading={t("about.section.ausserhalbDesTerminals")}
         section="ausserhalbDesTerminals"
       />
     </div>

@@ -3,6 +3,7 @@
 
 import { useEffect, useRef } from "react";
 import { useApp, useAppDispatch } from "../state/AppContext";
+import { useT } from "../i18n/LocaleContext";
 import { TextField } from "../editor/TextField";
 import { TextAreaField } from "../editor/TextAreaField";
 import { MarkdownToolbar } from "./MarkdownToolbar";
@@ -15,6 +16,7 @@ type Props = {
 export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
   const { letters } = useApp();
   const dispatch = useAppDispatch();
+  const t = useT();
   const active =
     letters.items.find((l) => l.id === letters.activeId) ?? letters.items[0];
 
@@ -34,7 +36,7 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
   if (!active) {
     return (
       <section className="editor-section">
-        <p className="helper-text">No letter selected.</p>
+        <p className="helper-text">{t("letters.empty")}</p>
       </section>
     );
   }
@@ -56,26 +58,26 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
   return (
     <>
       <section className="editor-section">
-        <h2>Addressee</h2>
+        <h2>{t("letter.section.addressee")}</h2>
         <TextField
-          label="Company (for filename + cover page)"
+          label={t("letter.field.company")}
           value={active.company}
-          placeholder="Company GmbH"
+          placeholder={t("letter.field.company.placeholder")}
           onChange={(company) => update({ company })}
         />
         <TextAreaField
-          label="Recipient block (one line each)"
+          label={t("letter.field.recipient")}
           value={active.recipient.join("\n")}
-          placeholder={"Company GmbH\nRecipient Name\nStreet 1\n12345 City"}
+          placeholder={t("letter.field.recipient.placeholder")}
           rows={4}
           onChange={(text) => update({ recipient: text.split("\n") })}
         />
       </section>
 
       <section className="editor-section">
-        <h2>Date & city</h2>
+        <h2>{t("letter.section.dateCity")}</h2>
         <div className="field">
-          <label>Date</label>
+          <label>{t("letter.field.date")}</label>
           <input
             type="date"
             value={active.date}
@@ -83,31 +85,31 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
           />
         </div>
         <TextField
-          label="City override (optional, defaults to stammdaten location)"
+          label={t("letter.field.cityOverride")}
           value={active.cityOverride ?? ""}
-          placeholder="leave empty to use stammdaten city"
+          placeholder={t("letter.field.cityOverride.placeholder")}
           onChange={(v) => update({ cityOverride: v === "" ? null : v })}
         />
       </section>
 
       <section className="editor-section">
-        <h2>Subject</h2>
+        <h2>{t("letter.section.subject")}</h2>
         <TextField
-          label="Subject line"
+          label={t("letter.field.subject")}
           value={active.subject}
-          placeholder="Bewerbung als ..."
+          placeholder={t("letter.field.subject.placeholder")}
           onChange={(subject) => update({ subject })}
         />
         <TextField
-          label="Reference (optional)"
+          label={t("letter.field.reference")}
           value={active.reference}
-          placeholder="Referenz-ID: 2026-WS-042 · Ihre Anzeige auf LinkedIn"
+          placeholder={t("letter.field.reference.placeholder")}
           onChange={(reference) => update({ reference })}
         />
       </section>
 
       <section className="editor-section">
-        <h2>Body</h2>
+        <h2>{t("letter.section.body")}</h2>
         <MarkdownToolbar
           textareaRef={bodyRef}
           value={active.body}
@@ -121,29 +123,22 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
           className="body-textarea"
           value={active.body}
           rows={14}
-          placeholder={"Sehr geehrte Frau Mustermann,\n\nals dualer Student..."}
+          placeholder={t("letter.field.body.placeholder")}
           onChange={(e) => update({ body: e.target.value })}
         />
-        <p className="helper-text">
-          Toolbar inserts markdown markers: <code>**bold**</code>,{" "}
-          <code>_italic_</code>, <code>- bullet</code>. Blank line = paragraph
-          break.
-        </p>
+        <p className="helper-text">{t("letter.body.helper")}</p>
       </section>
 
       <section className="editor-section">
-        <h2>Signature image (optional)</h2>
+        <h2>{t("letter.section.signature")}</h2>
         {signatureUrl && (
           <img
             className="signature-preview"
             src={signatureUrl}
-            alt="Signature preview"
+            alt={t("letter.signature.previewAlt")}
           />
         )}
-        <p className="helper-text">
-          Signature is not saved with your data — re-upload after loading a
-          saved file.
-        </p>
+        <p className="helper-text">{t("letter.signature.helper")}</p>
         <input
           type="file"
           accept="image/png,image/jpeg"
@@ -160,7 +155,7 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
             style={{ marginLeft: 8 }}
             onClick={() => onSignatureChange(null)}
           >
-            Remove signature
+            {t("letter.signature.remove")}
           </button>
         )}
       </section>

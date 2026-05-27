@@ -2,6 +2,7 @@
 // the photo data url lives in app state, never persisted to disk
 
 import { useApp, useAppDispatch } from "../state/AppContext";
+import { useT } from "../i18n/LocaleContext";
 
 type Props = {
   photoUrl: string | null;
@@ -11,6 +12,7 @@ type Props = {
 export function PhotoField({ photoUrl, onChange }: Props) {
   const { stammdaten } = useApp();
   const dispatch = useAppDispatch();
+  const t = useT();
   const { photoEnabled } = stammdaten;
 
   // read the picked file as a data url so we can inline it as an img src
@@ -27,7 +29,7 @@ export function PhotoField({ photoUrl, onChange }: Props) {
   return (
     <section className="editor-section">
       <div className="photo-header">
-        <h2>Profile photo</h2>
+        <h2>{t("photo.title")}</h2>
         <label className="photo-toggle">
           <input
             type="checkbox"
@@ -39,7 +41,7 @@ export function PhotoField({ photoUrl, onChange }: Props) {
               })
             }
           />
-          Show photo on cover page
+          {t("photo.toggle")}
         </label>
       </div>
 
@@ -48,13 +50,9 @@ export function PhotoField({ photoUrl, onChange }: Props) {
           <img
             className="photo-preview"
             src={photoUrl ?? `${import.meta.env.BASE_URL}placeholder_cv.png`}
-            alt="Profile preview"
+            alt={t("photo.previewAlt")}
           />
-          <p className="helper-text">
-            Use a square image (1:1). Non-square images will be center-cropped
-            to fit the circle. Photo is not saved with your data — re-upload
-            after loading a saved file.
-          </p>
+          <p className="helper-text">{t("photo.helper")}</p>
           <input
             type="file"
             accept="image/png,image/jpeg"
@@ -71,7 +69,7 @@ export function PhotoField({ photoUrl, onChange }: Props) {
               style={{ marginLeft: 8 }}
               onClick={() => onChange(null)}
             >
-              Remove photo
+              {t("photo.remove")}
             </button>
           )}
         </>

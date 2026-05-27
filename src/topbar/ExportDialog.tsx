@@ -4,6 +4,7 @@
 
 import { useEffect, useState } from "react";
 import { useApp } from "../state/AppContext";
+import { useT } from "../i18n/LocaleContext";
 
 export type ExportSelection = {
   deckblatt: boolean;
@@ -21,6 +22,7 @@ type Props = {
 
 export function ExportDialog({ open, onCancel, onExport }: Props) {
   const { letters } = useApp();
+  const t = useT();
 
   const [deckblatt, setDeckblatt] = useState(true);
   const [anschreiben, setAnschreiben] = useState(true);
@@ -47,15 +49,12 @@ export function ExportDialog({ open, onCancel, onExport }: Props) {
       className="modal-backdrop"
       role="dialog"
       aria-modal="true"
-      aria-label="Export PDF"
+      aria-label={t("export.aria")}
       onClick={onCancel}
     >
       <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h2>Export PDF</h2>
-        <p className="helper-text">
-          Pick which documents go into the combined PDF. They appear in the
-          order shown.
-        </p>
+        <h2>{t("export.title")}</h2>
+        <p className="helper-text">{t("export.helper")}</p>
 
         <ul className="export-list">
           <li>
@@ -65,7 +64,7 @@ export function ExportDialog({ open, onCancel, onExport }: Props) {
                 checked={deckblatt}
                 onChange={(e) => setDeckblatt(e.target.checked)}
               />
-              Deckblatt
+              {t("export.opt.deckblatt")}
             </label>
           </li>
           <li>
@@ -75,7 +74,7 @@ export function ExportDialog({ open, onCancel, onExport }: Props) {
                 checked={anschreiben}
                 onChange={(e) => setAnschreiben(e.target.checked)}
               />
-              Anschreiben
+              {t("export.opt.anschreiben")}
             </label>
             {anschreiben && (
               <select
@@ -98,7 +97,7 @@ export function ExportDialog({ open, onCancel, onExport }: Props) {
                 checked={lebenslauf}
                 onChange={(e) => setLebenslauf(e.target.checked)}
               />
-              Lebenslauf
+              {t("export.opt.lebenslauf")}
             </label>
           </li>
           <li>
@@ -108,21 +107,21 @@ export function ExportDialog({ open, onCancel, onExport }: Props) {
                 checked={about}
                 onChange={(e) => setAbout(e.target.checked)}
               />
-              About Me
+              {t("export.opt.about")}
             </label>
           </li>
         </ul>
 
         <div className="modal-actions">
           <button type="button" onClick={onCancel}>
-            Cancel
+            {t("export.cancel")}
           </button>
           <button
             type="button"
             onClick={handleExport}
             disabled={noneSelected}
           >
-            Export
+            {t("export.export")}
           </button>
         </div>
       </div>

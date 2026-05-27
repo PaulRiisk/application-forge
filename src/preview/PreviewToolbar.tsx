@@ -1,5 +1,7 @@
 // small floating bar above the preview with zoom buttons
 
+import { useT } from "../i18n/LocaleContext";
+
 type Props = {
   zoom: number;
   onZoomChange: (zoom: number) => void;
@@ -18,15 +20,16 @@ function nextStep(zoom: number, direction: 1 | -1): number {
 }
 
 export function PreviewToolbar({ zoom, onZoomChange }: Props) {
+  const t = useT();
   return (
-    <div className="preview-toolbar" role="toolbar" aria-label="Preview zoom">
+    <div className="preview-toolbar" role="toolbar" aria-label={t("preview.toolbar.aria")}>
       <button
         type="button"
         className="row-btn"
         onClick={() => onZoomChange(nextStep(zoom, -1))}
         disabled={zoom <= STEPS[0] + 0.001}
-        aria-label="Zoom out"
-        title="Zoom out"
+        aria-label={t("preview.toolbar.zoomOut")}
+        title={t("preview.toolbar.zoomOut")}
       >
         −
       </button>
@@ -38,8 +41,8 @@ export function PreviewToolbar({ zoom, onZoomChange }: Props) {
         className="row-btn"
         onClick={() => onZoomChange(nextStep(zoom, 1))}
         disabled={zoom >= STEPS[STEPS.length - 1] - 0.001}
-        aria-label="Zoom in"
-        title="Zoom in"
+        aria-label={t("preview.toolbar.zoomIn")}
+        title={t("preview.toolbar.zoomIn")}
       >
         +
       </button>
@@ -48,9 +51,9 @@ export function PreviewToolbar({ zoom, onZoomChange }: Props) {
         className="row-btn"
         onClick={() => onZoomChange(1)}
         disabled={Math.abs(zoom - 1) < 0.001}
-        title="Reset zoom to 100%"
+        title={t("preview.toolbar.resetTitle")}
       >
-        Reset
+        {t("preview.toolbar.reset")}
       </button>
     </div>
   );

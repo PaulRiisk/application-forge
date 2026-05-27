@@ -2,6 +2,7 @@
 // bullets are stored as an array but edited as one-per-line text
 
 import type { Entry } from "../types";
+import { useT } from "../i18n/LocaleContext";
 import { TextField } from "../editor/TextField";
 import { TextAreaField } from "../editor/TextAreaField";
 
@@ -24,6 +25,7 @@ export function EntryEditor({
   onMoveUp,
   onMoveDown,
 }: Props) {
+  const t = useT();
   return (
     <div className="entry-editor">
       <div className="entry-header">
@@ -32,7 +34,7 @@ export function EntryEditor({
           className="row-btn"
           disabled={isFirst}
           onClick={onMoveUp}
-          title="Move entry up"
+          title={t("cv.entry.moveUp")}
         >
           ↑
         </button>
@@ -41,7 +43,7 @@ export function EntryEditor({
           className="row-btn"
           disabled={isLast}
           onClick={onMoveDown}
-          title="Move entry down"
+          title={t("cv.entry.moveDown")}
         >
           ↓
         </button>
@@ -49,38 +51,38 @@ export function EntryEditor({
           type="button"
           className="row-btn danger"
           onClick={onRemove}
-          title="Remove entry"
+          title={t("cv.entry.removeTitle")}
         >
-          × Remove
+          {t("cv.entry.remove")}
         </button>
       </div>
       <TextField
-        label="Period"
+        label={t("cv.entry.period")}
         value={entry.period}
         onChange={(period) => onUpdate({ period })}
-        placeholder="Sep 2023 – present"
+        placeholder={t("cv.entry.period.placeholder")}
       />
       <TextField
-        label="Title"
+        label={t("cv.entry.title")}
         value={entry.title}
         onChange={(title) => onUpdate({ title })}
-        placeholder="Role title"
+        placeholder={t("cv.entry.title.placeholder")}
       />
       <TextField
-        label="Place"
+        label={t("cv.entry.place")}
         value={entry.place}
         onChange={(place) => onUpdate({ place })}
-        placeholder="Organization · City"
+        placeholder={t("cv.entry.place.placeholder")}
       />
       <TextAreaField
-        label="Bullets (one per line)"
+        label={t("cv.entry.bullets")}
         value={entry.bullets.join("\n")}
         onChange={(text) =>
           onUpdate({
             bullets: text.split("\n").map((b) => b.replace(/\s+$/, "")),
           })
         }
-        placeholder="First bullet&#10;Second bullet"
+        placeholder={t("cv.entry.bullets.placeholder")}
         rows={3}
       />
     </div>

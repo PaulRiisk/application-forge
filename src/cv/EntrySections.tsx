@@ -1,11 +1,13 @@
 // cv entry sections (experience, education, ...), each holds a list of entries
 
 import { useApp, useAppDispatch } from "../state/AppContext";
+import { useT } from "../i18n/LocaleContext";
 import { EntryEditor } from "./EntryEditor";
 
 export function EntrySections() {
   const { cv } = useApp();
   const dispatch = useAppDispatch();
+  const t = useT();
   const { entrySections } = cv;
 
   return (
@@ -16,7 +18,7 @@ export function EntrySections() {
             <input
               type="text"
               value={section.heading}
-              placeholder="section heading"
+              placeholder={t("cv.entry.sectionHeadingPlaceholder")}
               onChange={(e) =>
                 dispatch({
                   type: "CV_RENAME_ENTRY_SECTION",
@@ -36,7 +38,7 @@ export function EntrySections() {
                   direction: "up",
                 })
               }
-              title="Move section up"
+              title={t("cv.entry.moveSectionUp")}
             >
               ↑
             </button>
@@ -51,7 +53,7 @@ export function EntrySections() {
                   direction: "down",
                 })
               }
-              title="Move section down"
+              title={t("cv.entry.moveSectionDown")}
             >
               ↓
             </button>
@@ -61,7 +63,7 @@ export function EntrySections() {
               onClick={() =>
                 dispatch({ type: "CV_REMOVE_ENTRY_SECTION", id: section.id })
               }
-              title="Remove section"
+              title={t("cv.entry.removeSection")}
             >
               ×
             </button>
@@ -113,7 +115,7 @@ export function EntrySections() {
               dispatch({ type: "CV_ADD_ENTRY", sectionId: section.id })
             }
           >
-            + Add entry
+            {t("cv.entry.addEntry")}
           </button>
         </div>
       ))}
@@ -122,7 +124,7 @@ export function EntrySections() {
         className="add-btn"
         onClick={() => dispatch({ type: "CV_ADD_ENTRY_SECTION" })}
       >
-        + Add entry section
+        {t("cv.entry.addSection")}
       </button>
     </>
   );

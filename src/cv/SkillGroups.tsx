@@ -1,23 +1,25 @@
 // cv skill groups: heading + chip list each, reorderable
 
 import { useApp, useAppDispatch } from "../state/AppContext";
+import { useT } from "../i18n/LocaleContext";
 import { ChipInput } from "../editor/ChipInput";
 
 export function SkillGroups() {
   const { cv } = useApp();
   const dispatch = useAppDispatch();
+  const t = useT();
   const { skillGroups } = cv;
 
   return (
     <div className="editor-section">
-      <h2>Skills</h2>
+      <h2>{t("cv.section.skills")}</h2>
       {skillGroups.map((group, i) => (
         <div className="skill-group" key={group.id}>
           <div className="skill-group-header">
             <input
               type="text"
               value={group.heading}
-              placeholder="group heading"
+              placeholder={t("cv.skill.groupHeadingPlaceholder")}
               onChange={(e) =>
                 dispatch({
                   type: "CV_RENAME_SKILL_GROUP",
@@ -37,7 +39,7 @@ export function SkillGroups() {
                   direction: "up",
                 })
               }
-              title="Move group up"
+              title={t("cv.skill.moveGroupUp")}
             >
               ↑
             </button>
@@ -52,7 +54,7 @@ export function SkillGroups() {
                   direction: "down",
                 })
               }
-              title="Move group down"
+              title={t("cv.skill.moveGroupDown")}
             >
               ↓
             </button>
@@ -62,14 +64,14 @@ export function SkillGroups() {
               onClick={() =>
                 dispatch({ type: "CV_REMOVE_SKILL_GROUP", id: group.id })
               }
-              title="Remove group"
+              title={t("cv.skill.removeGroup")}
             >
               ×
             </button>
           </div>
           <ChipInput
             items={group.items}
-            placeholder="Add skill"
+            placeholder={t("cv.skill.addItem")}
             onAdd={(item) =>
               dispatch({ type: "CV_ADD_SKILL", groupId: group.id, item })
             }
@@ -92,7 +94,7 @@ export function SkillGroups() {
         className="add-btn"
         onClick={() => dispatch({ type: "CV_ADD_SKILL_GROUP" })}
       >
-        + Add skill group
+        {t("cv.skill.addGroup")}
       </button>
     </div>
   );

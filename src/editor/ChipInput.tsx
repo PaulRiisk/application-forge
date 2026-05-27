@@ -2,6 +2,7 @@
 // each chip has its own move-left, move-right and remove buttons
 
 import { useState } from "react";
+import { useT } from "../i18n/LocaleContext";
 import type { Direction } from "../types";
 
 type Props = {
@@ -14,11 +15,12 @@ type Props = {
 
 export function ChipInput({
   items,
-  placeholder = "Add item",
+  placeholder,
   onAdd,
   onRemove,
   onMove,
 }: Props) {
+  const t = useT();
   const [draft, setDraft] = useState("");
 
   // local draft to allow Enter-to-submit without trimming on every keystroke
@@ -35,7 +37,7 @@ export function ChipInput({
         <input
           type="text"
           value={draft}
-          placeholder={placeholder}
+          placeholder={placeholder ?? t("cv.skill.addItem")}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
@@ -45,7 +47,7 @@ export function ChipInput({
           }}
         />
         <button type="button" className="row-btn" onClick={submit}>
-          Add
+          {t("chip.addBtn")}
         </button>
       </div>
       <div className="chip-list">
@@ -56,8 +58,8 @@ export function ChipInput({
               className="chip-move"
               disabled={i === 0}
               onClick={() => onMove(i, "up")}
-              aria-label="Move left"
-              title="Move left"
+              aria-label={t("row.moveLeft")}
+              title={t("row.moveLeft")}
             >
               ◀
             </button>
@@ -66,8 +68,8 @@ export function ChipInput({
               className="chip-move"
               disabled={i === items.length - 1}
               onClick={() => onMove(i, "down")}
-              aria-label="Move right"
-              title="Move right"
+              aria-label={t("row.moveRight")}
+              title={t("row.moveRight")}
             >
               ▶
             </button>
@@ -75,8 +77,8 @@ export function ChipInput({
             <button
               type="button"
               onClick={() => onRemove(i)}
-              aria-label="Remove"
-              title="Remove"
+              aria-label={t("row.remove")}
+              title={t("row.remove")}
             >
               ×
             </button>

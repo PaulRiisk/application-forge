@@ -3,10 +3,12 @@
 
 import { useState } from "react";
 import { useApp, useAppDispatch } from "../state/AppContext";
+import { useT } from "../i18n/LocaleContext";
 
 export function LetterList() {
   const { letters } = useApp();
   const dispatch = useAppDispatch();
+  const t = useT();
 
   // which entry is currently being renamed (id of the letter, null = none)
   const [renamingId, setRenamingId] = useState<string | null>(null);
@@ -21,16 +23,14 @@ export function LetterList() {
       dispatch({
         type: "LETTERS_RENAME",
         id: renamingId,
-        label: draftLabel.trim() || "Untitled letter",
+        label: draftLabel.trim() || t("letters.defaultLabel"),
       });
     }
     setRenamingId(null);
   };
 
   const handleDelete = (id: string, label: string) => {
-    if (
-      !window.confirm(`Delete letter "${label}"? This can't be undone.`)
-    ) {
+    if (!window.confirm(t("letters.deleteConfirm", label))) {
       return;
     }
     dispatch({ type: "LETTERS_REMOVE", id });
@@ -38,7 +38,7 @@ export function LetterList() {
 
   return (
     <section className="editor-section">
-      <h2>Letters</h2>
+      <h2>{t("letters.section")}</h2>
       <ul className="letter-list">
         {letters.items.map((letter) => {
           const active = letter.id === letters.activeId;
@@ -76,8 +76,8 @@ export function LetterList() {
                 type="button"
                 className="row-btn"
                 onClick={() => startRename(letter.id, letter.label)}
-                title="Rename"
-                aria-label="Rename"
+                title={t("row.rename")}
+                aria-label={t("row.rename")}
               >
                 ✎
               </button>
@@ -87,8 +87,8 @@ export function LetterList() {
                 onClick={() =>
                   dispatch({ type: "LETTERS_DUPLICATE", id: letter.id })
                 }
-                title="Duplicate"
-                aria-label="Duplicate"
+                title={t("row.duplicate")}
+                aria-label={t("row.duplicate")}
               >
                 ⧉
               </button>
@@ -96,8 +96,8 @@ export function LetterList() {
                 type="button"
                 className="row-btn danger"
                 onClick={() => handleDelete(letter.id, letter.label)}
-                title="Delete"
-                aria-label="Delete"
+                title={t("row.delete")}
+                aria-label={t("row.delete")}
               >
                 ×
               </button>
@@ -110,7 +110,7 @@ export function LetterList() {
         className="add-btn"
         onClick={() => dispatch({ type: "LETTERS_ADD" })}
       >
-        + New letter
+        {t("letters.addBtn")}
       </button>
     </section>
   );

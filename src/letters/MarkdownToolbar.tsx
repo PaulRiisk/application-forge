@@ -3,6 +3,7 @@
 // we compute the new value + selection range and report both back
 
 import type { RefObject } from "react";
+import { useT } from "../i18n/LocaleContext";
 
 type Props = {
   textareaRef: RefObject<HTMLTextAreaElement | null>;
@@ -55,6 +56,7 @@ function bullet(
 }
 
 export function MarkdownToolbar({ textareaRef, value, onChange }: Props) {
+  const t = useT();
   const apply = (
     fn: (
       ta: HTMLTextAreaElement,
@@ -68,13 +70,13 @@ export function MarkdownToolbar({ textareaRef, value, onChange }: Props) {
   };
 
   return (
-    <div className="md-toolbar" role="toolbar" aria-label="Body formatting">
+    <div className="md-toolbar" role="toolbar" aria-label={t("md.toolbar.aria")}>
       <button
         type="button"
         className="md-btn"
         onClick={() => apply((ta, v) => wrap(ta, v, "**", "**"))}
-        aria-label="Bold"
-        title="Bold (**...**)"
+        aria-label={t("md.bold")}
+        title={t("md.bold.title")}
       >
         <strong>B</strong>
       </button>
@@ -82,8 +84,8 @@ export function MarkdownToolbar({ textareaRef, value, onChange }: Props) {
         type="button"
         className="md-btn"
         onClick={() => apply((ta, v) => wrap(ta, v, "_", "_"))}
-        aria-label="Italic"
-        title="Italic (_..._)"
+        aria-label={t("md.italic")}
+        title={t("md.italic.title")}
       >
         <em>I</em>
       </button>
@@ -91,8 +93,8 @@ export function MarkdownToolbar({ textareaRef, value, onChange }: Props) {
         type="button"
         className="md-btn"
         onClick={() => apply(bullet)}
-        aria-label="Bullet"
-        title="Bullet list"
+        aria-label={t("md.bullet")}
+        title={t("md.bullet.title")}
       >
         •
       </button>

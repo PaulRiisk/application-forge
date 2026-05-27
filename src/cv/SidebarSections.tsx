@@ -1,23 +1,25 @@
 // cv sidebar sections (languages etc.), each with key/value rows
 
 import { useApp, useAppDispatch } from "../state/AppContext";
+import { useT } from "../i18n/LocaleContext";
 import { KeyValueList } from "../editor/KeyValueList";
 
 export function SidebarSections() {
   const { cv } = useApp();
   const dispatch = useAppDispatch();
+  const t = useT();
   const { sidebarSections } = cv;
 
   return (
     <div className="editor-section">
-      <h2>Sidebar sections</h2>
+      <h2>{t("cv.section.sidebarSections")}</h2>
       {sidebarSections.map((section, i) => (
         <div className="skill-group" key={section.id}>
           <div className="skill-group-header">
             <input
               type="text"
               value={section.heading}
-              placeholder="section heading"
+              placeholder={t("cv.sidebar.sectionHeadingPlaceholder")}
               onChange={(e) =>
                 dispatch({
                   type: "CV_RENAME_SIDEBAR_SECTION",
@@ -37,7 +39,7 @@ export function SidebarSections() {
                   direction: "up",
                 })
               }
-              title="Move section up"
+              title={t("cv.sidebar.moveSectionUp")}
             >
               ↑
             </button>
@@ -52,7 +54,7 @@ export function SidebarSections() {
                   direction: "down",
                 })
               }
-              title="Move section down"
+              title={t("cv.sidebar.moveSectionDown")}
             >
               ↓
             </button>
@@ -65,7 +67,7 @@ export function SidebarSections() {
                   id: section.id,
                 })
               }
-              title="Remove section"
+              title={t("cv.sidebar.removeSection")}
             >
               ×
             </button>
@@ -73,7 +75,7 @@ export function SidebarSections() {
 
           <KeyValueList
             rows={section.rows}
-            addLabel="Add row"
+            addLabel={t("cv.sidebar.addRow")}
             onUpdate={(rowId, patch) =>
               dispatch({
                 type: "CV_UPDATE_SIDEBAR_ROW",
@@ -108,7 +110,7 @@ export function SidebarSections() {
         className="add-btn"
         onClick={() => dispatch({ type: "CV_ADD_SIDEBAR_SECTION" })}
       >
-        + Add sidebar section
+        {t("cv.sidebar.addSection")}
       </button>
     </div>
   );

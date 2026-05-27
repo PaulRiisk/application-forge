@@ -22,6 +22,7 @@ import {
   type ExportPage,
 } from "./pdf/exportPdf";
 import { useApp, useAppDispatch } from "./state/AppContext";
+import { useT } from "./i18n/LocaleContext";
 import {
   clearLocalStorage,
   downloadJson,
@@ -44,6 +45,7 @@ function App() {
 
   const doc = useApp();
   const dispatch = useAppDispatch();
+  const t = useT();
   const exportRefs = useRef<ExportRefs>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -60,17 +62,14 @@ function App() {
       setPhotoUrl(null);
       setSignatureUrl(null);
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Could not load file.";
-      window.alert(message);
+      // persistence.ts rejects with a translation key as the error message
+      const key = err instanceof Error ? err.message : "app.load.fallback";
+      window.alert(t(key));
     }
   };
 
   const handleReset = () => {
-    if (
-      !window.confirm(
-        "Reset will discard the current document set and clear saved data. Continue?",
-      )
-    ) {
+    if (!window.confirm(t("app.resetConfirm"))) {
       return;
     }
     clearLocalStorage();
@@ -117,7 +116,7 @@ function App() {
 
     const refs = exportRefs.current;
     if (!refs) {
-      window.alert("Export failed: preview host not mounted.");
+      window.alert(t("export.hostNotMounted"));
       return;
     }
 
@@ -142,8 +141,9 @@ function App() {
     try {
       await exportApplicationPdf(pages, buildFilename(sel));
     } catch (err) {
-      const message = err instanceof Error ? err.message : "PDF export failed.";
-      window.alert(message);
+      // exportPdf.ts throws translation keys; fall back to the generic msg
+      const key = err instanceof Error ? err.message : "export.failed";
+      window.alert(t(key));
     } finally {
       pages.forEach((p) => p.element.classList.remove("pdf-exporting"));
       if (needLetterSwitch) {

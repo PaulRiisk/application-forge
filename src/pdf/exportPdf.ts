@@ -39,7 +39,8 @@ export async function exportApplicationPdf(
   filename: string,
 ): Promise<void> {
   if (pages.length === 0) {
-    throw new Error("No pages selected for export.");
+    // throw a translation key; the caller resolves it via the locale t()
+    throw new Error("export.noPages");
   }
 
   const pdf = new jsPDF({ unit: "mm", format: "a4", orientation: "portrait" });

@@ -1,6 +1,7 @@
 // reusable list of label/value rows with move + remove buttons
 // shared by contact rows and (later) sidebar section rows
 
+import { useT } from "../i18n/LocaleContext";
 import type { Direction } from "../types";
 
 type Row = { id: string; label: string; value: string };
@@ -18,14 +19,15 @@ type Props = {
 
 export function KeyValueList({
   rows,
-  labelPlaceholder = "label",
-  valuePlaceholder = "value",
+  labelPlaceholder,
+  valuePlaceholder,
   onUpdate,
   onRemove,
   onMove,
   onAdd,
-  addLabel = "Add row",
+  addLabel,
 }: Props) {
+  const t = useT();
   return (
     <div>
       {rows.map((row, i) => (
@@ -33,13 +35,13 @@ export function KeyValueList({
           <input
             type="text"
             value={row.label}
-            placeholder={labelPlaceholder}
+            placeholder={labelPlaceholder ?? t("stamm.contact.labelPlaceholder")}
             onChange={(e) => onUpdate(row.id, { label: e.target.value })}
           />
           <input
             type="text"
             value={row.value}
-            placeholder={valuePlaceholder}
+            placeholder={valuePlaceholder ?? t("stamm.contact.valuePlaceholder")}
             onChange={(e) => onUpdate(row.id, { value: e.target.value })}
           />
           <button
@@ -47,8 +49,8 @@ export function KeyValueList({
             className="row-btn"
             disabled={i === 0}
             onClick={() => onMove(row.id, "up")}
-            aria-label="Move up"
-            title="Move up"
+            aria-label={t("row.moveUp")}
+            title={t("row.moveUp")}
           >
             ↑
           </button>
@@ -57,8 +59,8 @@ export function KeyValueList({
             className="row-btn"
             disabled={i === rows.length - 1}
             onClick={() => onMove(row.id, "down")}
-            aria-label="Move down"
-            title="Move down"
+            aria-label={t("row.moveDown")}
+            title={t("row.moveDown")}
           >
             ↓
           </button>
@@ -66,15 +68,15 @@ export function KeyValueList({
             type="button"
             className="row-btn danger"
             onClick={() => onRemove(row.id)}
-            aria-label="Remove"
-            title="Remove"
+            aria-label={t("row.remove")}
+            title={t("row.remove")}
           >
             ×
           </button>
         </div>
       ))}
       <button type="button" className="add-btn" onClick={onAdd}>
-        + {addLabel}
+        + {addLabel ?? t("kv.addBtn")}
       </button>
     </div>
   );

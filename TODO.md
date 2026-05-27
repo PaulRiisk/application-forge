@@ -85,6 +85,19 @@ if simpler.
   Phase 3 follow-up. Keep an eye out for similar drift between the document
   previews — they should look like one family.
 
+## GitHub Pages deploy
+
+PLAN §8 Phase 8 includes a GitHub Actions workflow that publishes the
+built app to GitHub Pages. Deferred — user pushes and deploys manually
+when the rest is locked down. When picking this back up:
+
+- Add `.github/workflows/deploy.yml` modelled on the cv-builder workflow
+  (Node setup, `npm ci`, `npm run build`, upload `dist/` as a Pages
+  artifact, deploy). Base path is already configured in
+  [vite.config.ts](vite.config.ts) → `/application-forge/` for builds.
+- Enable Pages in repo settings, choose "GitHub Actions" as the source.
+- README needs a live link once the URL is known.
+
 ---
 
 # Zukunftsausblick
