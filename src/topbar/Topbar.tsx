@@ -77,10 +77,7 @@ export function Topbar({ activeTab, onSave, onLoad, onReset, onExport }: Props) 
       {/* left: logo + breadcrumb */}
       <div className="topbar-brand">
         <div className="topbar-logo" aria-hidden="true">
-          <svg width="24" height="24" viewBox="0 0 300 300" fill="none">
-            <circle cx="149.5" cy="150.5" r="149.5" fill="#2F6FEB" />
-            <path d="M47.6647 198.023V103.65H77.0841V115.507H63.0269V186.129H77.0841V198.023H47.6647ZM99.3165 189H82.0153L108.377 112.636H129.183L155.508 189H138.207L119.079 130.087H118.482L99.3165 189ZM98.2351 158.984H139.102V171.587H98.2351V158.984ZM164.699 189V112.636H215.26V125.948H180.844V144.144H211.904V157.455H180.844V189H164.699ZM251.326 103.65V198.023H221.907V186.129H235.964V115.507H221.907V103.65H251.326Z" fill="white" />
-          </svg>
+          <img src={`${import.meta.env.BASE_URL}favicon.svg`} width="24" height="24" alt="" />
         </div>
         <span className="topbar-appname">Application Forge</span>
         <span className="topbar-breadcrumb-sep" aria-hidden="true">·</span>

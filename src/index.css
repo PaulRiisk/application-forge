@@ -133,30 +133,20 @@ body,
   z-index: 10;
 }
 
-/* ── two-pane area: editor left, preview right ── */
-.panes {
-  display: flex;
-  flex: 1;
-  min-height: 0;
-}
-
+/* ── editor + preview visual styles (layout/sizing owned by SplitPane) ── */
 .editor-pane {
-  flex: 0 0 460px;
   overflow-y: auto;
-  padding: 16px;
   background: var(--ui-bg);
-  border-right: 1px solid var(--ui-border);
+  min-width: 0;
+  height: 100%;
 }
 
 .preview-pane {
   flex: 1;
   overflow: auto;
-  padding: 16px;
   background: var(--ui-canvas-bg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
+  min-width: 0;
+  height: 100%;
 }
 
 /* ── zoom toolbar ── */
@@ -311,6 +301,29 @@ body,
   white-space: pre-wrap;
   word-break: break-word;
   overflow: auto;
+}
+
+/* ── custom scrollbar (editor pane + any overflow container) ── */
+.editor-pane {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ui-border-strong) transparent;
+}
+
+.editor-pane::-webkit-scrollbar {
+  width: 6px;
+}
+
+.editor-pane::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.editor-pane::-webkit-scrollbar-thumb {
+  background: var(--ui-border-strong);
+  border-radius: 3px;
+}
+
+.editor-pane::-webkit-scrollbar-thumb:hover {
+  background: var(--ui-text-soft);
 }
 
 /* ── popover panels (anchored dropdowns from topbar icons) ── */

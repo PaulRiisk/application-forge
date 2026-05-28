@@ -1,0 +1,62 @@
+/* resizable split pane */
+
+.split-pane {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* ── drag handle ── */
+.split-handle {
+  flex-shrink: 0;
+  width: 5px;
+  position: relative;
+  cursor: col-resize;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  z-index: 10;
+}
+
+.split-handle-bar {
+  width: 1px;
+  height: 100%;
+  background: var(--ui-border);
+  transition: background 0.15s;
+  pointer-events: none;
+}
+
+.split-handle:hover .split-handle-bar,
+.split-handle:active .split-handle-bar {
+  background: var(--ui-focus);
+  width: 2px;
+}
+
+/* ── reset button pinned to top of handle ── */
+.split-reset-btn {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ui-surface);
+  border: 1px solid var(--ui-border-strong);
+  border-radius: 50%;
+  cursor: pointer;
+  color: var(--ui-text-muted);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  transition: background 0.1s, color 0.1s, opacity 0.15s;
+  z-index: 11;
+}
+
+.split-reset-btn:hover {
+  background: var(--ui-focus);
+  color: #fff;
+  border-color: var(--ui-focus);
+}
