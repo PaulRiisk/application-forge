@@ -4,6 +4,7 @@
 
 import { useRef, useState } from "react";
 import { Topbar, type TabId } from "./topbar/Topbar";
+import { Sidebar } from "./topbar/Sidebar";
 import { StammdatenEditor } from "./stammdaten/StammdatenEditor";
 import { CoverPagePreview } from "./stammdaten/CoverPagePreview";
 import { LettersTab } from "./letters/LettersTab";
@@ -160,7 +161,6 @@ function App() {
     <div className="app">
       <Topbar
         activeTab={activeTab}
-        onTabChange={setActiveTab}
         onSave={handleSave}
         onLoad={handleLoad}
         onReset={() => setResetOpen(true)}
@@ -180,7 +180,9 @@ function App() {
         }}
       />
 
-      <main className="panes">
+      <div className="app-body">
+        <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        <main className="panes">
         <section className="editor-pane" aria-label="Editor">
           {activeTab === "stammdaten" && (
             <StammdatenEditor
@@ -232,7 +234,8 @@ function App() {
             </>
           )}
         </section>
-      </main>
+        </main>
+      </div>
 
       {/* offscreen tree used only by the export pipeline */}
       <ExportHost

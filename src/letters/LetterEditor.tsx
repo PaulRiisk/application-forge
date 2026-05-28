@@ -6,6 +6,7 @@ import { useApp, useAppDispatch } from "../state/AppContext";
 import { useT } from "../i18n/LocaleContext";
 import { TextField } from "../editor/TextField";
 import { TextAreaField } from "../editor/TextAreaField";
+import { EditorSection } from "../editor/EditorSection";
 import { MarkdownToolbar } from "./MarkdownToolbar";
 
 type Props = {
@@ -35,9 +36,9 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
 
   if (!active) {
     return (
-      <section className="editor-section">
+      <div className="editor-section" style={{ padding: "14px" }}>
         <p className="helper-text">{t("letters.empty")}</p>
-      </section>
+      </div>
     );
   }
 
@@ -57,8 +58,7 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
 
   return (
     <>
-      <section className="editor-section">
-        <h2>{t("letter.section.addressee")}</h2>
+      <EditorSection title={t("letter.section.addressee")}>
         <TextField
           label={t("letter.field.company")}
           value={active.company}
@@ -72,10 +72,9 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
           rows={4}
           onChange={(text) => update({ recipient: text.split("\n") })}
         />
-      </section>
+      </EditorSection>
 
-      <section className="editor-section">
-        <h2>{t("letter.section.dateCity")}</h2>
+      <EditorSection title={t("letter.section.dateCity")}>
         <div className="field">
           <label>{t("letter.field.date")}</label>
           <input
@@ -90,10 +89,9 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
           placeholder={t("letter.field.cityOverride.placeholder")}
           onChange={(v) => update({ cityOverride: v === "" ? null : v })}
         />
-      </section>
+      </EditorSection>
 
-      <section className="editor-section">
-        <h2>{t("letter.section.subject")}</h2>
+      <EditorSection title={t("letter.section.subject")}>
         <TextField
           label={t("letter.field.subject")}
           value={active.subject}
@@ -106,10 +104,9 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
           placeholder={t("letter.field.reference.placeholder")}
           onChange={(reference) => update({ reference })}
         />
-      </section>
+      </EditorSection>
 
-      <section className="editor-section">
-        <h2>{t("letter.section.body")}</h2>
+      <EditorSection title={t("letter.section.body")}>
         <MarkdownToolbar
           textareaRef={bodyRef}
           value={active.body}
@@ -127,9 +124,9 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
           onChange={(e) => update({ body: e.target.value })}
         />
         <p className="helper-text">{t("letter.body.helper")}</p>
-      </section>
+      </EditorSection>
 
-      <section className="editor-section">
+      <EditorSection title={t("letter.field.showAnlagen")}>
         <label className="photo-toggle">
           <input
             type="checkbox"
@@ -138,10 +135,9 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
           />
           {t("letter.field.showAnlagen")}
         </label>
-      </section>
+      </EditorSection>
 
-      <section className="editor-section">
-        <h2>{t("letter.section.signature")}</h2>
+      <EditorSection title={t("letter.section.signature")} defaultOpen={false}>
         {signatureUrl && (
           <img
             className="signature-preview"
@@ -169,7 +165,7 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
             {t("letter.signature.remove")}
           </button>
         )}
-      </section>
+      </EditorSection>
     </>
   );
 }
