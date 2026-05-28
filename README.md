@@ -1,21 +1,34 @@
-# application-forge
+# Application Forge
 
 A browser-only tool for writing job applications. Fill in your details once, pick an accent color, and export a cover page, cover letter, CV, and about-me page as a single PDF. All formatting is handled for you.
 
-Successor to [cv-builder](https://github.com/paulriisk/cv-builder), extended from a single CV to a full four-document application set with a shared design system.
+Successor to [cv-builder](https://github.com/paulriisk/cv-builder) prototype, extended from a single CV to a full four-document application set with a **shared design system and reworked UI.**
+
+![Preview image of the webapp](public/preview_image_af.png)
 
 ## Features
 
-- **Four documents, one design system.** Cover page, cover letter, CV, and about-me share fonts, accent color, and layout.
-- **Multiple cover letters.** Add, duplicate, rename, and delete; pick which one goes into the export.
-- **Live A4 preview** with zoom and an out-of-bounds indicator for content past the page edge.
-- **Dev / Classic modes.** Dev: carets, lowercase headings, monospace accent font. Classic: standard capitalization, Open Sans throughout.
-- **Theme presets** (Blue, Teal, Rust) plus a custom accent color picker.
-- **Markdown in the cover letter body.** Bold, italic, and bullet list via toolbar or shortcuts.
-- **PDF export.** Select which documents to include; merged into one file.
-- **Auto-save to localStorage** plus manual save/load as JSON. Reset restores defaults.
-- **Photos and signatures stay in memory only,** never written to localStorage or exported JSON.
-- **DE / EN UI toggle** independent of document content.
+- **Four documents, one design system.**
+- **Organize Multiple cover letters**
+- **Live A4 preview**
+- **Dev / Classic as preset style modes.**
+- **Theme presets and Custom Color**
+- **PDF export, single file or all together**
+- **Auto-save to localStorage and manual saving**
+- **Data saved in your memory only, no online saves**
+- **Language Support for EN / DE**
+
+## Planned
+
+- Command palette (⌘K) for jumping to fields and triggering actions
+- Standalone desktop build via Electron (portable .exe, no install required)
+- Cover letter templates as starting points
+- References tab
+- Keyboard shortcuts and undo/redo
+
+## Restrictions
+
+The document layout and structure are intentionally fixed. Application Forge handles all formatting — the two style modes (Dev and Classic) are the only layout variants and there are currently no plans to make the document structure configurable.
 
 ## Tech stack
 
