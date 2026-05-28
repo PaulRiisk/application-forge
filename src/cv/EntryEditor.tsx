@@ -52,8 +52,9 @@ export function EntryEditor({
           className="row-btn danger"
           onClick={onRemove}
           title={t("cv.entry.removeTitle")}
+          aria-label={t("cv.entry.removeTitle")}
         >
-          {t("cv.entry.remove")}
+          ×
         </button>
       </div>
       <TextField

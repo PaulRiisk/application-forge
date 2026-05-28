@@ -39,6 +39,7 @@ export function LetterList() {
   return (
     <section className="editor-section">
       <h2>{t("letters.section")}</h2>
+      <div style={{ padding: "10px 14px 14px" }}>
       <ul className="letter-list">
         {letters.items.map((letter) => {
           const active = letter.id === letters.activeId;
@@ -112,6 +113,7 @@ export function LetterList() {
       >
         {t("letters.addBtn")}
       </button>
+      </div>
     </section>
   );
 }

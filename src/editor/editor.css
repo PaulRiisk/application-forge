@@ -59,15 +59,30 @@
   border-top: 1px solid var(--ui-border);
 }
 
-/* backwards compat: sections without collapse still work */
+/* sections without EditorSection wrapper: h2 acts as header, siblings get padding */
 .editor-section > h2 {
   font-size: 13px;
   font-weight: 600;
   color: var(--ui-text);
-  margin: 0 0 12px;
-  padding: 12px 14px 0;
+  margin: 0;
+  padding: 12px 14px;
   letter-spacing: 0;
   text-transform: none;
+  border-bottom: 1px solid var(--ui-border);
+}
+
+/* everything after the h2 inside a raw editor-section gets body padding */
+.editor-section > h2 ~ * {
+  padding-left: 14px;
+  padding-right: 14px;
+}
+
+.editor-section > h2 ~ *:last-child {
+  padding-bottom: 14px;
+}
+
+.editor-section > h2 ~ *:first-of-type {
+  margin-top: 10px;
 }
 
 /* ── fields ── */
@@ -320,12 +335,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--ui-border);
 }
 
-.photo-header > h2 {
-  margin: 0;
+.photo-body {
+  padding: 12px 14px 14px;
 }
+
 
 .photo-toggle {
   display: inline-flex;
