@@ -28,7 +28,7 @@ Successor to [cv-builder](https://github.com/paulriisk/cv-builder) prototype, ex
 
 ## Restrictions
 
-The document layout and structure are intentionally fixed. Application Forge handles all formatting — the two style modes (Dev and Classic) are the only layout variants and there are currently no plans to make the document structure configurable.
+The document layout and structure are intentionally fixed. Application Forge handles all formatting, the two style modes (Dev and Classic) are the only layout variants and there are currently no plans to make the document structure configurable.
 
 ## Tech stack
 
