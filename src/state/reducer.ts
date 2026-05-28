@@ -11,6 +11,7 @@ import type {
   CoverLetter,
   CvDocument,
   Direction,
+  DocLocale,
   Entry,
   EntrySection,
   LayoutMode,
@@ -40,10 +41,15 @@ export type Action =
   | { type: "STAMM_SET_THEME_PRESET"; preset: ThemePreset; accent: string }
   | { type: "STAMM_SET_ACCENT"; accent: string }
   | { type: "STAMM_SET_MODE"; mode: LayoutMode }
+  | { type: "STAMM_SET_TEMPLATE_LOCALE"; locale: DocLocale }
   | { type: "STAMM_RENAME_SCHWERPUNKT"; heading: string }
   | { type: "STAMM_ADD_SCHWERPUNKT_ITEM"; item: string }
   | { type: "STAMM_REMOVE_SCHWERPUNKT_ITEM"; index: number }
   | { type: "STAMM_MOVE_SCHWERPUNKT_ITEM"; index: number; direction: Direction }
+  | { type: "STAMM_ADD_ANLAGE"; item: string }
+  | { type: "STAMM_UPDATE_ANLAGE"; index: number; value: string }
+  | { type: "STAMM_REMOVE_ANLAGE"; index: number }
+  | { type: "STAMM_MOVE_ANLAGE"; index: number; direction: Direction }
   | { type: "LETTERS_ADD" }
   | { type: "LETTERS_DUPLICATE"; id: string }
   | { type: "LETTERS_REMOVE"; id: string }
@@ -100,6 +106,10 @@ export type Action =
       direction: Direction;
     }
   | { type: "ABOUT_SET_WARUM"; value: string }
+  | { type: "ABOUT_SET_FOOTER"; value: string }
+  | { type: "ABOUT_SET_STAERKEN_HEADING"; value: string }
+  | { type: "ABOUT_SET_WASICHBAUE_HEADING"; value: string }
+  | { type: "ABOUT_SET_AUSSERHALB_HEADING"; value: string }
   | { type: "ABOUT_ADD_STRENGTH" }
   | {
       type: "ABOUT_UPDATE_STRENGTH";
@@ -127,7 +137,7 @@ export type Action =
       direction: Direction;
     }
   | { type: "LOAD_DOCUMENT"; doc: ApplicationDocument }
-  | { type: "RESET" };
+  | { type: "RESET"; locale?: DocLocale };
 
 // swap two neighbours in a list, no-op if the target index is out of range
 function move<T>(list: T[], index: number, direction: Direction): T[] {
@@ -221,6 +231,10 @@ export function appReducer(
     case "STAMM_SET_MODE":
       return updateStammdaten(state, { mode: action.mode });
 
+    // template language only swaps the fixed preview strings, non-destructive
+    case "STAMM_SET_TEMPLATE_LOCALE":
+      return updateStammdaten(state, { templateLocale: action.locale });
+
     // schwerpunkt: single chip group shown on the cover page and the letter sidebar
     case "STAMM_RENAME_SCHWERPUNKT":
       return updateStammdaten(state, {
@@ -257,6 +271,30 @@ export function appReducer(
         },
       });
 
+    // anlagen: shared attachment list shown on the deckblatt and (optionally)
+    // in the anschreiben footer
+    case "STAMM_ADD_ANLAGE": {
+      const item = action.item.trim();
+      if (!item) return state;
+      return updateStammdaten(state, {
+        anlagen: [...state.stammdaten.anlagen, item],
+      });
+    }
+    case "STAMM_UPDATE_ANLAGE":
+      return updateStammdaten(state, {
+        anlagen: state.stammdaten.anlagen.map((a, i) =>
+          i === action.index ? action.value : a,
+        ),
+      });
+    case "STAMM_REMOVE_ANLAGE":
+      return updateStammdaten(state, {
+        anlagen: state.stammdaten.anlagen.filter((_, i) => i !== action.index),
+      });
+    case "STAMM_MOVE_ANLAGE":
+      return updateStammdaten(state, {
+        anlagen: move(state.stammdaten.anlagen, action.index, action.direction),
+      });
+
     // letters: add a fresh blank, switch active to it
     case "LETTERS_ADD": {
       const letter: CoverLetter = {
@@ -269,6 +307,7 @@ export function appReducer(
         subject: "Subject line",
         reference: "",
         body: "",
+        showAnlagen: true,
       };
       return {
         ...state,
@@ -312,6 +351,7 @@ export function appReducer(
           subject: "Subject line",
           reference: "",
           body: "",
+          showAnlagen: true,
         };
         return {
           ...state,
@@ -555,9 +595,17 @@ export function appReducer(
         ),
       });
 
-    // about: warum_software paragraph
+    // about: warum_software paragraph + footer closing line
     case "ABOUT_SET_WARUM":
       return updateAbout(state, { warumSoftware: action.value });
+    case "ABOUT_SET_FOOTER":
+      return updateAbout(state, { footer: action.value });
+    case "ABOUT_SET_STAERKEN_HEADING":
+      return updateAbout(state, { staerkenHeading: action.value });
+    case "ABOUT_SET_WASICHBAUE_HEADING":
+      return updateAbout(state, { wasIchBaueHeading: action.value });
+    case "ABOUT_SET_AUSSERHALB_HEADING":
+      return updateAbout(state, { ausserhalbHeading: action.value });
 
     // about: stärken cards (2x2 grid)
     case "ABOUT_ADD_STRENGTH": {
@@ -621,6 +669,10 @@ export function appReducer(
     case "LOAD_DOCUMENT":
       return action.doc;
     case "RESET":
-      return createDefaultApplication();
+      // reset seeds the editable content in the chosen language and presets
+      // templateLocale to match; defaults to current template language
+      return createDefaultApplication(
+        action.locale ?? state.stammdaten.templateLocale,
+      );
   }
 }

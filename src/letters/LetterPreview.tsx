@@ -4,6 +4,7 @@
 
 import { useApp } from "../state/AppContext";
 import { renderMarkdown } from "../markdown/render";
+import { docStrings } from "../i18n/docStrings";
 
 function renderName(name: string) {
   if (name.includes("\n")) {
@@ -19,13 +20,13 @@ function renderName(name: string) {
   return name;
 }
 
-// "27. mai 2026" — lowercase de month, no padding, dot after day
-function formatDate(iso: string): string {
+// "27. mai 2026" (de) — lowercase month, no padding, dot after day
+function formatDate(iso: string, locale: string): string {
   // iso is yyyy-mm-dd from the date input; build a local date to avoid tz drift
   const [y, m, d] = iso.split("-").map(Number);
   if (!y || !m || !d) return iso;
   const date = new Date(y, m - 1, d);
-  const month = date.toLocaleDateString("de-DE", { month: "long" }).toLowerCase();
+  const month = date.toLocaleDateString(locale, { month: "long" }).toLowerCase();
   return `${d}. ${month} ${y}`;
 }
 
@@ -39,13 +40,16 @@ export function LetterPreview({ signatureUrl }: Props) {
     letters.items.find((l) => l.id === letters.activeId) ?? letters.items[0];
   const isDev = stammdaten.mode === "dev";
   const prefix = isDev ? "// " : "";
+  const d = docStrings(stammdaten.templateLocale);
 
   const locationRow = stammdaten.contact.find((r) =>
     r.label.toLowerCase().includes("location"),
   );
   const stammCity = locationRow?.value.split(",")[0]?.trim() ?? "";
   const city = active?.cityOverride?.trim() || stammCity;
-  const dateLine = active ? `${city ? city + ", " : ""}${formatDate(active.date)}` : "";
+  const dateLine = active
+    ? `${city ? city + ", " : ""}${formatDate(active.date, d.dateLocale)}`
+    : "";
 
   return (
     <>
@@ -53,7 +57,7 @@ export function LetterPreview({ signatureUrl }: Props) {
         <h1 className="letter-name">{renderName(stammdaten.name)}</h1>
         <div className="letter-kicker">
           {isDev && <span className="caret">&gt;</span>}
-          {isDev ? " anschreiben" : "anschreiben"}
+          {isDev ? ` ${d.anschreiben}` : d.anschreiben}
         </div>
 
         {stammdaten.contact.length > 0 && (
@@ -69,7 +73,7 @@ export function LetterPreview({ signatureUrl }: Props) {
 
         {stammdaten.kurz.trim() !== "" && (
           <>
-            <h2 className="sec-label">{prefix}kurz</h2>
+            <h2 className="sec-label">{prefix}{d.kurz}</h2>
             <p className="letter-kurz">{stammdaten.kurz}</p>
           </>
         )}
@@ -97,7 +101,7 @@ export function LetterPreview({ signatureUrl }: Props) {
             <div className="letter-top-row">
               <div className="letter-recipient">
                 <div className="letter-mini-label">
-                  {isDev ? <><span className="caret">&gt;</span> an</> : "empfänger"}
+                  {isDev ? <><span className="caret">&gt;</span> {d.an}</> : d.an}
                 </div>
                 {active.recipient.map((line, i) => (
                   <div key={i}>{line}</div>
@@ -105,14 +109,14 @@ export function LetterPreview({ signatureUrl }: Props) {
               </div>
               <div className="letter-date">
                 <div className="letter-mini-label">
-                  {isDev ? <><span className="caret">&gt;</span> datum</> : "datum"}
+                  {isDev ? <><span className="caret">&gt;</span> {d.datum}</> : d.datum}
                 </div>
                 {dateLine}
               </div>
             </div>
 
             <div className="letter-subject-block">
-              <h2 className="sec-label">{prefix}betreff</h2>
+              <h2 className="sec-label">{prefix}{d.betreff}</h2>
               <div className="letter-subject">{active.subject}</div>
               {active.reference.trim() !== "" && (
                 <div className="letter-reference">{active.reference}</div>
@@ -131,14 +135,16 @@ export function LetterPreview({ signatureUrl }: Props) {
 
             <div className="letter-signed">{stammdaten.name.replace(/\n/g, " ")}</div>
 
-            <div className="letter-attachments">
-              <div className="letter-mini-label">
-                {isDev ? <><span className="caret">&gt;</span> anlagen</> : "anlagen"}
+            {active.showAnlagen && stammdaten.anlagen.length > 0 && (
+              <div className="letter-attachments">
+                <div className="letter-mini-label">
+                  {isDev ? <><span className="caret">&gt;</span> {d.anlagen}</> : d.anlagen}
+                </div>
+                <div className="letter-attachments-list">
+                  {stammdaten.anlagen.join(" · ")}
+                </div>
               </div>
-              <div className="letter-attachments-list">
-                lebenslauf.pdf · zeugnis_ba.pdf · arbeitszeugnis_ressortmanagel.pdf
-              </div>
-            </div>
+            )}
           </>
         )}
       </section>

@@ -130,6 +130,17 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
       </section>
 
       <section className="editor-section">
+        <label className="photo-toggle">
+          <input
+            type="checkbox"
+            checked={active.showAnlagen}
+            onChange={(e) => update({ showAnlagen: e.target.checked })}
+          />
+          {t("letter.field.showAnlagen")}
+        </label>
+      </section>
+
+      <section className="editor-section">
         <h2>{t("letter.section.signature")}</h2>
         {signatureUrl && (
           <img

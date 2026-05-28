@@ -48,6 +48,13 @@ export type Theme = {
 
 export type LayoutMode = "dev" | "classic";
 
+// language used for two distinct things, both independent of the UI language:
+//  - templateLocale: the fixed preview strings the user can't edit
+//    (kicker words, "betreff", mappe items, ...). live, non-destructive.
+//  - the reset seed language: which language the editable default content
+//    is seeded in. chosen at reset time, also presets templateLocale.
+export type DocLocale = "de" | "en";
+
 // shared identity, contact, theme, mode — every document reads from here
 export type Stammdaten = {
   name: string;
@@ -55,9 +62,11 @@ export type Stammdaten = {
   kurz: string;
   contact: ContactRow[];
   schwerpunkt: SkillGroup;
+  anlagen: string[];
   photoEnabled: boolean;
   theme: Theme;
   mode: LayoutMode;
+  templateLocale: DocLocale;
 };
 
 // one cover letter inside the letters list
@@ -71,6 +80,7 @@ export type CoverLetter = {
   subject: string;
   reference: string;
   body: string;
+  showAnlagen: boolean;
 };
 
 export type CvDocument = {
@@ -95,9 +105,14 @@ export type AboutItem = {
 
 export type AboutDocument = {
   warumSoftware: string;
+  // section headings are editable so the user can rename them
+  staerkenHeading: string;
+  wasIchBaueHeading: string;
+  ausserhalbHeading: string;
   staerken: StrengthCard[];
   wasIchBaue: AboutItem[];
   ausserhalbDesTerminals: AboutItem[];
+  footer: string;
 };
 
 // the whole application set lives in one object, saved and loaded as-is

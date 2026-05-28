@@ -59,8 +59,9 @@
   box-shadow: 0 8px 32px rgba(14, 19, 32, 0.08);
 }
 
-/* overflow markers, only visible when content grows past A4 height */
-.af-preview-root .page::before {
+/* overflow markers, only rendered when the root has the has-overflow flag
+   (set by PreviewShell when the page content grows past A4 height) */
+.af-preview-root.has-overflow .page::before {
   content: "";
   position: absolute;
   left: 0;
@@ -78,7 +79,7 @@
   border-top: 1px dashed rgba(200, 40, 40, 0.7);
 }
 
-.af-preview-root .page::after {
+.af-preview-root.has-overflow .page::after {
   content: "Beyond A4 — won't appear in PDF";
   position: absolute;
   left: 50%;

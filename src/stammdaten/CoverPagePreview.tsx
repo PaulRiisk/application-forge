@@ -3,6 +3,7 @@
 // the currently chosen application
 
 import { useApp } from "../state/AppContext";
+import { docStrings } from "../i18n/docStrings";
 
 // name splits onto two lines: explicit \n wins, otherwise split a two-word name
 function renderName(name: string) {
@@ -19,14 +20,6 @@ function renderName(name: string) {
   return name;
 }
 
-// fixed mappe entries for v1, mirrors the application set
-const MAPPE_ITEMS = [
-  "01 anschreiben",
-  "02 lebenslauf",
-  "03 über mich",
-  "04 zeugnisse",
-];
-
 type Props = {
   photoUrl: string;
 };
@@ -34,6 +27,7 @@ type Props = {
 export function CoverPagePreview({ photoUrl }: Props) {
   const { stammdaten, letters } = useApp();
   const isDev = stammdaten.mode === "dev";
+  const d = docStrings(stammdaten.templateLocale);
 
   // active letter drives subject + company; fall back to first letter if id stale
   const active =
@@ -45,13 +39,28 @@ export function CoverPagePreview({ photoUrl }: Props) {
   );
   const city = locationRow?.value.split(",")[0]?.trim() ?? "";
 
+  // the standard four documents, in the template language
+  const standardMappe = [
+    d.mappeAnschreiben,
+    d.mappeLebenslauf,
+    d.mappeUeberMich,
+    d.mappeZeugnisse,
+  ];
+
+  // mappe list = the standard four documents plus any anlagen, numbered through
+  const mappeItems = [...standardMappe, ...stammdaten.anlagen].map(
+    (item, i) => `${String(i + 1).padStart(2, "0")} ${item}`,
+  );
+
   const year = new Date().getFullYear();
   const kicker = isDev ? (
     <>
-      <span className="caret">&gt;</span> bewerbung / {year}
+      <span className="caret">&gt;</span> {d.bewerbung} / {year}
     </>
   ) : (
-    <>bewerbung {year}</>
+    <>
+      {d.bewerbung} {year}
+    </>
   );
 
   return (
@@ -85,18 +94,24 @@ export function CoverPagePreview({ photoUrl }: Props) {
           <div className="cover-mappe">
             <h2 className="sec-label">
               {isDev ? "// " : ""}
-              bewerbung als
+              {d.bewerbungAls}
             </h2>
             <div className="cover-subject">{active.subject}</div>
             <div className="cover-subject-company">
-              bei {active.company}
+              {d.bei} {active.company}
               {city ? ` · ${city}` : ""}
             </div>
             <div className="cover-mappe-label">
-              {isDev ? <><span className="caret">&gt;</span> mappe enthält</> : "mappe enthält"}
+              {isDev ? (
+                <>
+                  <span className="caret">&gt;</span> {d.mappeEnthaelt}
+                </>
+              ) : (
+                d.mappeEnthaelt
+              )}
             </div>
             <div className="cover-mappe-list">
-              {MAPPE_ITEMS.map((item) => (
+              {mappeItems.map((item) => (
                 <span key={item}>{item}</span>
               ))}
             </div>

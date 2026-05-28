@@ -145,10 +145,12 @@ function ItemEditor({
 }
 
 function ItemListSection({
-  heading,
+  headingValue,
+  onHeadingChange,
   section,
 }: {
-  heading: string;
+  headingValue: string;
+  onHeadingChange: (value: string) => void;
   section: ItemSection;
 }) {
   const { about } = useApp();
@@ -157,7 +159,11 @@ function ItemListSection({
   const items = about[section];
   return (
     <section className="editor-section">
-      <h2>{heading}</h2>
+      <TextField
+        label={t("about.heading.label")}
+        value={headingValue}
+        onChange={onHeadingChange}
+      />
       {items.map((item, i) => (
         <ItemEditor
           key={item.id}
@@ -210,7 +216,13 @@ export function AboutEditor() {
       </section>
 
       <section className="editor-section">
-        <h2>{t("about.section.staerken")}</h2>
+        <TextField
+          label={t("about.heading.label")}
+          value={about.staerkenHeading}
+          onChange={(value) =>
+            dispatch({ type: "ABOUT_SET_STAERKEN_HEADING", value })
+          }
+        />
         {about.staerken.map((card, i) => (
           <StrengthEditor
             key={card.id}
@@ -242,13 +254,29 @@ export function AboutEditor() {
       </section>
 
       <ItemListSection
-        heading={t("about.section.wasIchBaue")}
+        headingValue={about.wasIchBaueHeading}
+        onHeadingChange={(value) =>
+          dispatch({ type: "ABOUT_SET_WASICHBAUE_HEADING", value })
+        }
         section="wasIchBaue"
       />
       <ItemListSection
-        heading={t("about.section.ausserhalbDesTerminals")}
+        headingValue={about.ausserhalbHeading}
+        onHeadingChange={(value) =>
+          dispatch({ type: "ABOUT_SET_AUSSERHALB_HEADING", value })
+        }
         section="ausserhalbDesTerminals"
       />
+
+      <section className="editor-section">
+        <h2>{t("about.section.footer")}</h2>
+        <TextField
+          label={t("about.footer.label")}
+          value={about.footer}
+          placeholder={t("about.footer.placeholder")}
+          onChange={(value) => dispatch({ type: "ABOUT_SET_FOOTER", value })}
+        />
+      </section>
     </div>
   );
 }

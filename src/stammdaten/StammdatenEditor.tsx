@@ -1,6 +1,7 @@
 // stammdaten editor: identity (name, title, kurz), contact rows, photo,
-// schwerpunkt chip group
+// schwerpunkt chip group, shared anlagen list
 
+import { useState } from "react";
 import { useApp, useAppDispatch } from "../state/AppContext";
 import { useT } from "../i18n/LocaleContext";
 import { TextField } from "../editor/TextField";
@@ -18,9 +19,37 @@ export function StammdatenEditor({ photoUrl, onPhotoChange }: Props) {
   const { stammdaten } = useApp();
   const dispatch = useAppDispatch();
   const t = useT();
+  const [anlageDraft, setAnlageDraft] = useState("");
+
+  const submitAnlage = () => {
+    const item = anlageDraft.trim();
+    if (!item) return;
+    dispatch({ type: "STAMM_ADD_ANLAGE", item });
+    setAnlageDraft("");
+  };
 
   return (
     <div className="editor">
+      <section className="editor-section">
+        <h2>{t("stamm.section.docLocale")}</h2>
+        <div className="field">
+          <label>{t("stamm.docLocale.label")}</label>
+          <select
+            value={stammdaten.templateLocale}
+            onChange={(e) =>
+              dispatch({
+                type: "STAMM_SET_TEMPLATE_LOCALE",
+                locale: e.target.value as "de" | "en",
+              })
+            }
+          >
+            <option value="de">{t("stamm.docLocale.de")}</option>
+            <option value="en">{t("stamm.docLocale.en")}</option>
+          </select>
+        </div>
+        <p className="helper-text">{t("stamm.docLocale.helper")}</p>
+      </section>
+
       <section className="editor-section">
         <h2>{t("stamm.section.identity")}</h2>
         <TextField
@@ -88,6 +117,82 @@ export function StammdatenEditor({ photoUrl, onPhotoChange }: Props) {
             })
           }
         />
+      </section>
+
+      <section className="editor-section">
+        <h2>{t("stamm.section.anlagen")}</h2>
+        <p className="helper-text">{t("stamm.anlagen.helper")}</p>
+        <div className="chip-input-row">
+          <input
+            type="text"
+            value={anlageDraft}
+            placeholder={t("stamm.anlagen.addPlaceholder")}
+            onChange={(e) => setAnlageDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                submitAnlage();
+              }
+            }}
+          />
+          <button type="button" className="row-btn" onClick={submitAnlage}>
+            {t("chip.addBtn")}
+          </button>
+        </div>
+        {stammdaten.anlagen.map((anlage, i) => (
+          <div className="kv-row" key={i}>
+            <input
+              type="text"
+              style={{ gridColumn: "1 / 3" }}
+              value={anlage}
+              placeholder={t("stamm.anlagen.itemPlaceholder")}
+              onChange={(e) =>
+                dispatch({
+                  type: "STAMM_UPDATE_ANLAGE",
+                  index: i,
+                  value: e.target.value,
+                })
+              }
+            />
+            <button
+              type="button"
+              className="row-btn"
+              disabled={i === 0}
+              onClick={() =>
+                dispatch({ type: "STAMM_MOVE_ANLAGE", index: i, direction: "up" })
+              }
+              aria-label={t("row.moveUp")}
+              title={t("row.moveUp")}
+            >
+              ↑
+            </button>
+            <button
+              type="button"
+              className="row-btn"
+              disabled={i === stammdaten.anlagen.length - 1}
+              onClick={() =>
+                dispatch({
+                  type: "STAMM_MOVE_ANLAGE",
+                  index: i,
+                  direction: "down",
+                })
+              }
+              aria-label={t("row.moveDown")}
+              title={t("row.moveDown")}
+            >
+              ↓
+            </button>
+            <button
+              type="button"
+              className="row-btn danger"
+              onClick={() => dispatch({ type: "STAMM_REMOVE_ANLAGE", index: i })}
+              aria-label={t("row.remove")}
+              title={t("row.remove")}
+            >
+              ×
+            </button>
+          </div>
+        ))}
       </section>
     </div>
   );

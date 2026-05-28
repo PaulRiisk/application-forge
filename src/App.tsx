@@ -15,7 +15,9 @@ import { AboutPreview } from "./about/AboutPreview";
 import { PreviewShell } from "./preview/PreviewShell";
 import { PreviewToolbar } from "./preview/PreviewToolbar";
 import { ExportDialog, type ExportSelection } from "./topbar/ExportDialog";
+import { ResetDialog } from "./topbar/ResetDialog";
 import { ExportHost, type ExportRefs } from "./pdf/ExportHost";
+import type { DocLocale } from "./types";
 import {
   exportApplicationPdf,
   slugify,
@@ -42,6 +44,7 @@ function App() {
   const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
   const [zoom, setZoom] = useState(0.75);
   const [exportOpen, setExportOpen] = useState(false);
+  const [resetOpen, setResetOpen] = useState(false);
 
   const doc = useApp();
   const dispatch = useAppDispatch();
@@ -68,14 +71,12 @@ function App() {
     }
   };
 
-  const handleReset = () => {
-    if (!window.confirm(t("app.resetConfirm"))) {
-      return;
-    }
+  const handleReset = (locale: DocLocale) => {
     clearLocalStorage();
     setPhotoUrl(null);
     setSignatureUrl(null);
-    dispatch({ type: "RESET" });
+    dispatch({ type: "RESET", locale });
+    setResetOpen(false);
   };
 
   // build filename from §6 of the plan
@@ -162,7 +163,7 @@ function App() {
         onTabChange={setActiveTab}
         onSave={handleSave}
         onLoad={handleLoad}
-        onReset={handleReset}
+        onReset={() => setResetOpen(true)}
         onExport={() => setExportOpen(true)}
       />
 
@@ -244,6 +245,12 @@ function App() {
         open={exportOpen}
         onCancel={() => setExportOpen(false)}
         onExport={runExport}
+      />
+
+      <ResetDialog
+        open={resetOpen}
+        onCancel={() => setResetOpen(false)}
+        onReset={handleReset}
       />
     </div>
   );

@@ -51,7 +51,8 @@ function regenerateIds(doc: ApplicationDocument): ApplicationDocument {
   const lettersItems = doc.letters.items.map((l) => {
     const fresh = newId();
     letterIdMap.set(l.id, fresh);
-    return { ...l, id: fresh };
+    // backfill showAnlagen for files saved before the field existed
+    return { ...l, id: fresh, showAnlagen: l.showAnlagen ?? true };
   });
   const nextActiveId =
     letterIdMap.get(doc.letters.activeId) ??
@@ -62,6 +63,9 @@ function regenerateIds(doc: ApplicationDocument): ApplicationDocument {
     ...doc,
     stammdaten: {
       ...doc.stammdaten,
+      // backfill fields added after older files were saved
+      anlagen: doc.stammdaten.anlagen ?? [],
+      templateLocale: doc.stammdaten.templateLocale ?? "de",
       contact: doc.stammdaten.contact.map((row) => ({ ...row, id: newId() })),
       schwerpunkt: { ...doc.stammdaten.schwerpunkt, id: newId() },
     },
@@ -85,6 +89,11 @@ function regenerateIds(doc: ApplicationDocument): ApplicationDocument {
     },
     about: {
       ...doc.about,
+      // backfill fields added after older files were saved
+      footer: doc.about.footer ?? "",
+      staerkenHeading: doc.about.staerkenHeading ?? "stärken",
+      wasIchBaueHeading: doc.about.wasIchBaueHeading ?? "was_ich_baue",
+      ausserhalbHeading: doc.about.ausserhalbHeading ?? "außerhalb_des_terminals",
       staerken: doc.about.staerken.map((c) => ({ ...c, id: newId() })),
       wasIchBaue: doc.about.wasIchBaue.map((i) => ({ ...i, id: newId() })),
       ausserhalbDesTerminals: doc.about.ausserhalbDesTerminals.map((i) => ({

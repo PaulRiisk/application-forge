@@ -55,6 +55,12 @@ export const STRINGS = {
     "row.delete": "Löschen",
 
     // stammdaten editor
+    "stamm.section.docLocale": "Sprache der Vorlagentexte",
+    "stamm.docLocale.label": "Vorlagensprache",
+    "stamm.docLocale.de": "Deutsch",
+    "stamm.docLocale.en": "Englisch",
+    "stamm.docLocale.helper":
+      "Steuert die festen Texte in den Dokumenten, die du nicht direkt bearbeiten kannst (z. B. „bewerbung“, „betreff“, „mappe enthält“). Wird sofort umgeschaltet, ohne deine Eingaben zu verändern. Unabhängig von der UI-Sprache.",
     "stamm.section.identity": "Identität",
     "stamm.field.name": "Name",
     "stamm.field.name.placeholder": "Vorname Nachname",
@@ -71,6 +77,11 @@ export const STRINGS = {
     "stamm.schwerpunkt.heading": "Überschrift",
     "stamm.schwerpunkt.headingPlaceholder": "schwerpunkt",
     "stamm.schwerpunkt.addPlaceholder": "Schwerpunkt hinzufügen",
+    "stamm.section.anlagen": "Anlagen",
+    "stamm.anlagen.helper":
+      "Anlagen erscheinen im Deckblatt unter „mappe enthält“ und optional im Anschreiben-Fuß. Je ein Dateiname oder Stichwort pro Zeile.",
+    "stamm.anlagen.addPlaceholder": "Anlage hinzufügen (z. B. zeugnis.pdf)",
+    "stamm.anlagen.itemPlaceholder": "Anlage",
 
     // photo
     "photo.title": "Profilfoto",
@@ -111,6 +122,7 @@ export const STRINGS = {
       "Sehr geehrte Frau Mustermann,\n\nals dualer Student...",
     "letter.body.helper":
       "Toolbar fügt Markdown-Marker ein: **fett**, _kursiv_, - Aufzählung. Leerzeile = Absatz.",
+    "letter.field.showAnlagen": "Anlagen im Fuß anzeigen",
     "letter.section.signature": "Unterschrift (optional)",
     "letter.signature.previewAlt": "Vorschau Unterschrift",
     "letter.signature.helper":
@@ -167,6 +179,10 @@ export const STRINGS = {
     "about.section.warum": "warum_software",
     "about.warum.label": "Absatz",
     "about.warum.placeholder": "Was dich in die Software-Welt gezogen hat.",
+    "about.section.footer": "Abschlusszeile",
+    "about.footer.label": "Fußzeile (frei editierbar)",
+    "about.footer.placeholder": "gerne mehr im persönlichen gespräch",
+    "about.heading.label": "Abschnitts-Überschrift",
     "about.section.staerken": "stärken (2×2-Karten)",
     "about.staerken.add": "+ Karte hinzufügen",
     "about.staerken.removeTitle": "Karte entfernen",
@@ -204,9 +220,15 @@ export const STRINGS = {
     "export.failed": "PDF-Export fehlgeschlagen.",
     "export.noPages": "Keine Seiten zum Export ausgewählt.",
 
+    // reset dialog
+    "reset.title": "Zurücksetzen",
+    "reset.helper":
+      "Setzt alle vier Dokumente auf die Vorbelegung zurück. Wähle die Sprache der vorbelegten Inhalte. Alle aktuellen Eingaben gehen verloren.",
+    "reset.de": "Auf Deutsch zurücksetzen",
+    "reset.en": "Auf Englisch zurücksetzen",
+    "reset.cancel": "Abbrechen",
+
     // app-level alerts
-    "app.resetConfirm":
-      "Beim Zurücksetzen werden alle aktuellen Daten verworfen. Fortfahren?",
     "app.load.invalidDoc":
       "Datei ist kein gültiges application-forge-Dokument (Version 1).",
     "app.load.invalidJson": "Datei ist kein gültiges JSON.",
@@ -264,6 +286,12 @@ export const STRINGS = {
     "row.delete": "Delete",
 
     // stammdaten editor
+    "stamm.section.docLocale": "Template text language",
+    "stamm.docLocale.label": "Template language",
+    "stamm.docLocale.de": "German",
+    "stamm.docLocale.en": "English",
+    "stamm.docLocale.helper":
+      "Controls the fixed document text you can't edit directly (e.g. \"application\", \"subject\", \"set contains\"). Switches instantly without changing your own input. Independent of the UI language.",
     "stamm.section.identity": "Identity",
     "stamm.field.name": "Name",
     "stamm.field.name.placeholder": "Name Surname",
@@ -280,6 +308,11 @@ export const STRINGS = {
     "stamm.schwerpunkt.heading": "Heading",
     "stamm.schwerpunkt.headingPlaceholder": "focus",
     "stamm.schwerpunkt.addPlaceholder": "Add focus area",
+    "stamm.section.anlagen": "Attachments",
+    "stamm.anlagen.helper":
+      "Attachments show on the cover page under \"mappe enthält\" and optionally in the cover-letter footer. One filename or label per line.",
+    "stamm.anlagen.addPlaceholder": "Add attachment (e.g. reference.pdf)",
+    "stamm.anlagen.itemPlaceholder": "Attachment",
 
     // photo
     "photo.title": "Profile photo",
@@ -321,6 +354,7 @@ export const STRINGS = {
       "Dear Ms. Mustermann,\n\nas a dual student...",
     "letter.body.helper":
       "Toolbar inserts markdown markers: **bold**, _italic_, - bullet. Blank line = paragraph break.",
+    "letter.field.showAnlagen": "Show attachments in footer",
     "letter.section.signature": "Signature image (optional)",
     "letter.signature.previewAlt": "Signature preview",
     "letter.signature.helper":
@@ -377,6 +411,10 @@ export const STRINGS = {
     "about.section.warum": "warum_software",
     "about.warum.label": "Paragraph",
     "about.warum.placeholder": "What pulled you into software.",
+    "about.section.footer": "Closing line",
+    "about.footer.label": "Footer (free text)",
+    "about.footer.placeholder": "happy to tell you more in person",
+    "about.heading.label": "Section heading",
     "about.section.staerken": "stärken (2×2 cards)",
     "about.staerken.add": "+ Add card",
     "about.staerken.removeTitle": "Remove card",
@@ -413,6 +451,14 @@ export const STRINGS = {
     "export.hostNotMounted": "Export failed: preview host not mounted.",
     "export.failed": "PDF export failed.",
     "export.noPages": "No pages selected for export.",
+
+    // reset dialog
+    "reset.title": "Reset",
+    "reset.helper":
+      "Resets all four documents to their defaults. Pick the language of the seeded content. All current input will be lost.",
+    "reset.de": "Reset to German",
+    "reset.en": "Reset to English",
+    "reset.cancel": "Cancel",
 
     // app-level alerts
     "app.resetConfirm":
