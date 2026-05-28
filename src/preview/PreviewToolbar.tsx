@@ -1,5 +1,6 @@
 // small floating bar above the preview with zoom buttons
 
+import { Maximize2 } from "lucide-react";
 import { useT } from "../i18n/LocaleContext";
 
 type Props = {
@@ -51,9 +52,10 @@ export function PreviewToolbar({ zoom, onZoomChange }: Props) {
         className="row-btn"
         onClick={() => onZoomChange(1)}
         disabled={Math.abs(zoom - 1) < 0.001}
+        aria-label={t("preview.toolbar.resetTitle")}
         title={t("preview.toolbar.resetTitle")}
       >
-        {t("preview.toolbar.reset")}
+        <Maximize2 size={13} />
       </button>
     </div>
   );
