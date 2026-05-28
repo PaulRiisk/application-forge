@@ -2,6 +2,23 @@
 
 Open items to revisit, not blocking v1 phases.
 
+## Command palette (⌘K)
+
+- **Stage 1 — Field navigation**: index all editor fields by tab/section at runtime, floating modal with live filter, click/Enter jumps to the right tab and focuses the field via `id`.
+- **Stage 2 — Actions**: add Save, Export, Reset, Dev/Classic toggle, theme preset switches as selectable entries alongside the fields.
+
+## Electron portable build
+
+Package the app as a standalone `.exe` (Windows) / `.app` (Mac) that users can download and run without installing Node or a browser.
+
+- Use `electron` + `electron-builder` (`npm install --save-dev electron electron-builder`)
+- `main.js`: open a `BrowserWindow` that loads `dist/index.html` (file protocol, no dev server needed)
+- `electron-builder` config in `package.json`: target `portable` for Windows so no installer is required — single `.exe` the user can double-click
+- Add `npm run electron:dev` (loads Vite dev server) and `npm run electron:build` (builds Vite first, then packages) scripts
+- Expected output size: ~120–150 MB due to bundled Chromium; portable `.exe` in `release/`
+- Photo/signature stay in memory only — no changes needed to the data model
+
+
 ## GitHub Pages deploy
 
 PLAN §8 Phase 8 includes a GitHub Actions workflow that publishes the

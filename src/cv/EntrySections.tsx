@@ -14,7 +14,7 @@ export function EntrySections() {
     <>
       {entrySections.map((section, sectionIndex) => (
         <div className="editor-section" key={section.id}>
-          <div className="entry-section-header">
+          <div className="entry-section-header" style={{ padding: "10px 14px", borderBottom: "1px solid var(--ui-border)", marginBottom: 0 }}>
             <input
               type="text"
               value={section.heading}
@@ -69,6 +69,7 @@ export function EntrySections() {
             </button>
           </div>
 
+          <div style={{ padding: "10px 14px 14px" }}>
           {section.entries.map((entry, entryIndex) => (
             <EntryEditor
               key={entry.id}
@@ -117,6 +118,7 @@ export function EntrySections() {
           >
             {t("cv.entry.addEntry")}
           </button>
+          </div>
         </div>
       ))}
       <button

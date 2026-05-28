@@ -46,8 +46,8 @@ export function ChipInput({
             }
           }}
         />
-        <button type="button" className="row-btn" onClick={submit}>
-          {t("chip.addBtn")}
+        <button type="button" className="row-btn" onClick={submit} aria-label={t("chip.addBtn")} title={t("chip.addBtn")}>
+          +
         </button>
       </div>
       <div className="chip-list">

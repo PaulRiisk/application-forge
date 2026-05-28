@@ -4,6 +4,7 @@
 import { useApp, useAppDispatch } from "../state/AppContext";
 import { useT } from "../i18n/LocaleContext";
 import { TextAreaField } from "../editor/TextAreaField";
+import { EditorSection } from "../editor/EditorSection";
 import { SkillGroups } from "./SkillGroups";
 import { SidebarSections } from "./SidebarSections";
 import { EntrySections } from "./EntrySections";
@@ -15,8 +16,7 @@ export function CvEditor() {
 
   return (
     <div className="editor">
-      <section className="editor-section">
-        <h2>{t("cv.section.profile")}</h2>
+      <EditorSection title={t("cv.section.profile")}>
         <TextAreaField
           label={t("cv.field.profile")}
           value={cv.profile}
@@ -24,7 +24,7 @@ export function CvEditor() {
           onChange={(value) => dispatch({ type: "CV_SET_PROFILE", value })}
           rows={5}
         />
-      </section>
+      </EditorSection>
 
       <SkillGroups />
       <SidebarSections />

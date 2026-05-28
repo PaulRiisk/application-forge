@@ -1,0 +1,74 @@
+/* vertical sidebar with sliding active indicator */
+
+.sidebar {
+  width: var(--ui-sidebar-width);
+  flex-shrink: 0;
+  background: var(--ui-sidebar-bg);
+  border-right: 1px solid var(--ui-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.sidebar-tabs {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 2px;
+  padding: 0 6px;
+}
+
+/* the sliding pill that moves to the active tab */
+.sidebar-indicator {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  background: var(--ui-hover);
+  border-radius: 8px;
+  pointer-events: none;
+  transition: top 0.2s cubic-bezier(0.4, 0, 0.2, 1), height 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+.sidebar-tab {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 10px 4px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--ui-text-muted);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+  transition: color 0.15s;
+}
+
+.sidebar-tab:hover {
+  color: var(--ui-text);
+}
+
+.sidebar-tab.active {
+  color: var(--ui-focus);
+}
+
+.sidebar-tab-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.sidebar-tab-label {
+  text-align: center;
+  letter-spacing: 0.01em;
+}

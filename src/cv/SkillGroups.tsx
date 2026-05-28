@@ -13,6 +13,7 @@ export function SkillGroups() {
   return (
     <div className="editor-section">
       <h2>{t("cv.section.skills")}</h2>
+      <div style={{ padding: "10px 14px 14px" }}>
       {skillGroups.map((group, i) => (
         <div className="skill-group" key={group.id}>
           <div className="skill-group-header">
@@ -96,6 +97,7 @@ export function SkillGroups() {
       >
         {t("cv.skill.addGroup")}
       </button>
+      </div>
     </div>
   );
 }

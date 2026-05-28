@@ -4,6 +4,7 @@
 
 import { useRef, useState } from "react";
 import { Topbar, type TabId } from "./topbar/Topbar";
+import { Sidebar } from "./topbar/Sidebar";
 import { StammdatenEditor } from "./stammdaten/StammdatenEditor";
 import { CoverPagePreview } from "./stammdaten/CoverPagePreview";
 import { LettersTab } from "./letters/LettersTab";
@@ -14,6 +15,7 @@ import { AboutEditor } from "./about/AboutEditor";
 import { AboutPreview } from "./about/AboutPreview";
 import { PreviewShell } from "./preview/PreviewShell";
 import { PreviewToolbar } from "./preview/PreviewToolbar";
+import { SplitPane } from "./layout/SplitPane";
 import { ExportDialog, type ExportSelection } from "./topbar/ExportDialog";
 import { ResetDialog } from "./topbar/ResetDialog";
 import { ExportHost, type ExportRefs } from "./pdf/ExportHost";
@@ -160,7 +162,6 @@ function App() {
     <div className="app">
       <Topbar
         activeTab={activeTab}
-        onTabChange={setActiveTab}
         onSave={handleSave}
         onLoad={handleLoad}
         onReset={() => setResetOpen(true)}
@@ -180,59 +181,48 @@ function App() {
         }}
       />
 
-      <main className="panes">
-        <section className="editor-pane" aria-label="Editor">
-          {activeTab === "stammdaten" && (
-            <StammdatenEditor
-              photoUrl={photoUrl}
-              onPhotoChange={setPhotoUrl}
-            />
-          )}
-          {activeTab === "anschreiben" && (
-            <LettersTab
-              signatureUrl={signatureUrl}
-              onSignatureChange={setSignatureUrl}
-            />
-          )}
-          {activeTab === "lebenslauf" && <CvEditor />}
-          {activeTab === "about" && <AboutEditor />}
-        </section>
-
-        <section className="preview-pane" aria-label="Preview">
-          {activeTab === "stammdaten" && (
-            <>
+      <div className="app-body">
+        <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+        <SplitPane
+          left={
+            <section aria-label="Editor" style={{ padding: 16 }}>
+              {activeTab === "stammdaten" && (
+                <StammdatenEditor photoUrl={photoUrl} onPhotoChange={setPhotoUrl} />
+              )}
+              {activeTab === "anschreiben" && (
+                <LettersTab signatureUrl={signatureUrl} onSignatureChange={setSignatureUrl} />
+              )}
+              {activeTab === "lebenslauf" && <CvEditor />}
+              {activeTab === "about" && <AboutEditor />}
+            </section>
+          }
+          right={
+            <section aria-label="Preview" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12, padding: 16, height: "100%" }}>
               <PreviewToolbar zoom={zoom} onZoomChange={setZoom} />
-              <PreviewShell zoom={zoom} pageClass="deckblatt">
-                <CoverPagePreview photoUrl={photoSrc} />
-              </PreviewShell>
-            </>
-          )}
-          {activeTab === "anschreiben" && (
-            <>
-              <PreviewToolbar zoom={zoom} onZoomChange={setZoom} />
-              <PreviewShell zoom={zoom} pageClass="anschreiben">
-                <LetterPreview signatureUrl={signatureUrl} />
-              </PreviewShell>
-            </>
-          )}
-          {activeTab === "lebenslauf" && (
-            <>
-              <PreviewToolbar zoom={zoom} onZoomChange={setZoom} />
-              <PreviewShell zoom={zoom} pageClass="lebenslauf">
-                <CvPreview photoUrl={photoSrc} />
-              </PreviewShell>
-            </>
-          )}
-          {activeTab === "about" && (
-            <>
-              <PreviewToolbar zoom={zoom} onZoomChange={setZoom} />
-              <PreviewShell zoom={zoom} pageClass="aboutme">
-                <AboutPreview />
-              </PreviewShell>
-            </>
-          )}
-        </section>
-      </main>
+              {activeTab === "stammdaten" && (
+                <PreviewShell zoom={zoom} pageClass="deckblatt">
+                  <CoverPagePreview photoUrl={photoSrc} />
+                </PreviewShell>
+              )}
+              {activeTab === "anschreiben" && (
+                <PreviewShell zoom={zoom} pageClass="anschreiben">
+                  <LetterPreview signatureUrl={signatureUrl} />
+                </PreviewShell>
+              )}
+              {activeTab === "lebenslauf" && (
+                <PreviewShell zoom={zoom} pageClass="lebenslauf">
+                  <CvPreview photoUrl={photoSrc} />
+                </PreviewShell>
+              )}
+              {activeTab === "about" && (
+                <PreviewShell zoom={zoom} pageClass="aboutme">
+                  <AboutPreview />
+                </PreviewShell>
+              )}
+            </section>
+          }
+        />
+      </div>
 
       {/* offscreen tree used only by the export pipeline */}
       <ExportHost
