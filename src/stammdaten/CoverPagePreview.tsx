@@ -39,15 +39,22 @@ export function CoverPagePreview({ photoUrl }: Props) {
   );
   const city = locationRow?.value.split(",")[0]?.trim() ?? "";
 
-  // the standard four documents, in the template language
+  // named zeugnisse replace the generic "zeugnisse" item when present, so the
+  // mappe lists each certificate by name instead of the catch-all label
+  const zeugnisItems =
+    stammdaten.zeugnisse.length > 0
+      ? stammdaten.zeugnisse
+      : [d.mappeZeugnisse];
+
+  // the standard documents in the template language, then the zeugnis entries
   const standardMappe = [
     d.mappeAnschreiben,
     d.mappeLebenslauf,
     d.mappeUeberMich,
-    d.mappeZeugnisse,
+    ...zeugnisItems,
   ];
 
-  // mappe list = the standard four documents plus any anlagen, numbered through
+  // mappe list = the standard documents plus any anlagen, numbered through
   const mappeItems = [...standardMappe, ...stammdaten.anlagen].map(
     (item, i) => `${String(i + 1).padStart(2, "0")} ${item}`,
   );

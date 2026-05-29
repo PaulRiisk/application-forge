@@ -124,7 +124,7 @@ export function createDefaultApplication(
       kurz: c.kurz,
       contact: [
         { id: newId(), label: "email", value: "mail.mail@mail.com" },
-        { id: newId(), label: "github", value: "github.com/username" },
+        { id: newId(), label: "phone", value: "+49 000 0000000" },
         { id: newId(), label: "linkedin", value: "linkedin.com/in/username" },
         { id: newId(), label: "location", value: "City, Country" },
       ],
@@ -134,6 +134,9 @@ export function createDefaultApplication(
         items: [],
       },
       anlagen: [],
+      zeugnisse: [],
+      senderAddress: "",
+      senderEnabled: false,
       photoEnabled: true,
       theme: {
         preset: "blue",

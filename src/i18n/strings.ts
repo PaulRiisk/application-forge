@@ -89,6 +89,17 @@ export const STRINGS = {
       "Anlagen erscheinen im Deckblatt unter „mappe enthält“ und optional im Anschreiben-Fuß. Je ein Dateiname oder Stichwort pro Zeile.",
     "stamm.anlagen.addPlaceholder": "Anlage hinzufügen (z. B. zeugnis.pdf)",
     "stamm.anlagen.itemPlaceholder": "Anlage",
+    "stamm.section.sender": "Absender",
+    "stamm.sender.toggle": "Absender im Anschreiben anzeigen",
+    "stamm.sender.helper":
+      "Deine eigene Postanschrift, oben im Anschreiben über dem Empfänger. Eine Zeile pro Eintrag.",
+    "stamm.sender.label": "Anschrift",
+    "stamm.sender.placeholder": "Name\nStraße 1\n12345 Stadt",
+    "stamm.section.zeugnisse": "Zeugnisse",
+    "stamm.zeugnisse.helper":
+      "Benannte Zeugnisse erscheinen im Deckblatt unter „mappe enthält“ und ersetzen den pauschalen Eintrag „zeugnisse“. Nur Bezeichnungen — keine Dateien werden angehängt.",
+    "stamm.zeugnisse.addPlaceholder": "Zeugnis hinzufügen (z. B. Arbeitszeugnis Firma X)",
+    "stamm.zeugnisse.itemPlaceholder": "Zeugnis",
 
     // photo
     "photo.title": "Profilfoto",
@@ -327,6 +338,17 @@ export const STRINGS = {
       "Attachments show on the cover page under \"mappe enthält\" and optionally in the cover-letter footer. One filename or label per line.",
     "stamm.anlagen.addPlaceholder": "Add attachment (e.g. reference.pdf)",
     "stamm.anlagen.itemPlaceholder": "Attachment",
+    "stamm.section.sender": "Sender",
+    "stamm.sender.toggle": "Show sender address on the cover letter",
+    "stamm.sender.helper":
+      "Your own postal address, shown at the top of the cover letter above the recipient. One line per entry.",
+    "stamm.sender.label": "Address",
+    "stamm.sender.placeholder": "Name\nStreet 1\n12345 City",
+    "stamm.section.zeugnisse": "References",
+    "stamm.zeugnisse.helper":
+      "Named references show on the cover page under \"mappe enthält\" and replace the generic \"references\" item. Labels only — no files are attached.",
+    "stamm.zeugnisse.addPlaceholder": "Add reference (e.g. Reference Company X)",
+    "stamm.zeugnisse.itemPlaceholder": "Reference",
 
     // photo
     "photo.title": "Profile photo",

@@ -63,6 +63,13 @@ export type Stammdaten = {
   contact: ContactRow[];
   schwerpunkt: SkillGroup;
   anlagen: string[];
+  // named certificates/references shown on the cover page; when non-empty they
+  // replace the generic "zeugnisse" mappe item. text only — no files attached
+  zeugnisse: string[];
+  // own postal address shown at the top of the cover letter; multi-line text,
+  // gated by senderEnabled (like the photo toggle)
+  senderAddress: string;
+  senderEnabled: boolean;
   photoEnabled: boolean;
   theme: Theme;
   mode: LayoutMode;

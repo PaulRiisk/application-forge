@@ -50,6 +50,12 @@ export type Action =
   | { type: "STAMM_UPDATE_ANLAGE"; index: number; value: string }
   | { type: "STAMM_REMOVE_ANLAGE"; index: number }
   | { type: "STAMM_MOVE_ANLAGE"; index: number; direction: Direction }
+  | { type: "STAMM_ADD_ZEUGNIS"; item: string }
+  | { type: "STAMM_UPDATE_ZEUGNIS"; index: number; value: string }
+  | { type: "STAMM_REMOVE_ZEUGNIS"; index: number }
+  | { type: "STAMM_MOVE_ZEUGNIS"; index: number; direction: Direction }
+  | { type: "STAMM_SET_SENDER_ADDRESS"; value: string }
+  | { type: "STAMM_SET_SENDER_ENABLED"; enabled: boolean }
   | { type: "LETTERS_ADD" }
   | { type: "LETTERS_DUPLICATE"; id: string }
   | { type: "LETTERS_REMOVE"; id: string }
@@ -294,6 +300,42 @@ export function appReducer(
       return updateStammdaten(state, {
         anlagen: move(state.stammdaten.anlagen, action.index, action.direction),
       });
+
+    // zeugnisse: named certificates/references; same list shape as anlagen,
+    // shown on the deckblatt mappe (replacing the generic "zeugnisse" item)
+    case "STAMM_ADD_ZEUGNIS": {
+      const item = action.item.trim();
+      if (!item) return state;
+      return updateStammdaten(state, {
+        zeugnisse: [...state.stammdaten.zeugnisse, item],
+      });
+    }
+    case "STAMM_UPDATE_ZEUGNIS":
+      return updateStammdaten(state, {
+        zeugnisse: state.stammdaten.zeugnisse.map((z, i) =>
+          i === action.index ? action.value : z,
+        ),
+      });
+    case "STAMM_REMOVE_ZEUGNIS":
+      return updateStammdaten(state, {
+        zeugnisse: state.stammdaten.zeugnisse.filter(
+          (_, i) => i !== action.index,
+        ),
+      });
+    case "STAMM_MOVE_ZEUGNIS":
+      return updateStammdaten(state, {
+        zeugnisse: move(
+          state.stammdaten.zeugnisse,
+          action.index,
+          action.direction,
+        ),
+      });
+
+    // sender address: own postal address printed atop the cover letter
+    case "STAMM_SET_SENDER_ADDRESS":
+      return updateStammdaten(state, { senderAddress: action.value });
+    case "STAMM_SET_SENDER_ENABLED":
+      return updateStammdaten(state, { senderEnabled: action.enabled });
 
     // letters: add a fresh blank, switch active to it
     case "LETTERS_ADD": {

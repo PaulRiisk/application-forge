@@ -374,6 +374,24 @@
   letter-spacing: 0.04em;
 }
 
+/* sender's own address: small return-address line above the recipient block */
+.af-preview-root .letter-sender {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 6px;
+  font-size: 8px;
+  color: var(--text-muted);
+  padding-bottom: 4px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.af-preview-root .letter-sender span:not(:last-child)::after {
+  content: "·";
+  margin-left: 6px;
+  color: var(--text-muted);
+}
+
 .af-preview-root .letter-date {
   text-align: right;
   font-family: var(--font-mono);

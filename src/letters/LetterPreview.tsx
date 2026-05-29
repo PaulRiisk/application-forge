@@ -100,6 +100,18 @@ export function LetterPreview({ signatureUrl }: Props) {
           <>
             <div className="letter-top-row">
               <div className="letter-recipient">
+                {/* sender's own postal address, classic small line above the
+                    recipient block; gated by the senderEnabled toggle */}
+                {stammdaten.senderEnabled &&
+                  stammdaten.senderAddress.trim() !== "" && (
+                    <div className="letter-sender">
+                      {stammdaten.senderAddress
+                        .split("\n")
+                        .map((line, i) => (
+                          <span key={i}>{line}</span>
+                        ))}
+                    </div>
+                  )}
                 <div className="letter-mini-label">
                   {isDev ? <><span className="caret">&gt;</span> {d.an}</> : d.an}
                 </div>

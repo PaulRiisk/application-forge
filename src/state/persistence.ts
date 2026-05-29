@@ -65,6 +65,9 @@ function regenerateIds(doc: ApplicationDocument): ApplicationDocument {
       ...doc.stammdaten,
       // backfill fields added after older files were saved
       anlagen: doc.stammdaten.anlagen ?? [],
+      zeugnisse: doc.stammdaten.zeugnisse ?? [],
+      senderAddress: doc.stammdaten.senderAddress ?? "",
+      senderEnabled: doc.stammdaten.senderEnabled ?? false,
       templateLocale: doc.stammdaten.templateLocale ?? "de",
       contact: doc.stammdaten.contact.map((row) => ({ ...row, id: newId() })),
       schwerpunkt: { ...doc.stammdaten.schwerpunkt, id: newId() },

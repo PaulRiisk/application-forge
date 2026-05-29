@@ -15,7 +15,7 @@ type Props = {
 };
 
 export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
-  const { letters } = useApp();
+  const { letters, stammdaten } = useApp();
   const dispatch = useAppDispatch();
   const t = useT();
   const active =
@@ -58,6 +58,35 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
 
   return (
     <>
+      <EditorSection id="sec-letter-sender" title={t("stamm.section.sender")}>
+        <label className="photo-toggle">
+          <input
+            type="checkbox"
+            checked={stammdaten.senderEnabled}
+            onChange={(e) =>
+              dispatch({
+                type: "STAMM_SET_SENDER_ENABLED",
+                enabled: e.target.checked,
+              })
+            }
+          />
+          {t("stamm.sender.toggle")}
+        </label>
+        <p className="helper-text">{t("stamm.sender.helper")}</p>
+        {stammdaten.senderEnabled && (
+          <TextAreaField
+            id="fld-letter-sender"
+            label={t("stamm.sender.label")}
+            value={stammdaten.senderAddress}
+            placeholder={t("stamm.sender.placeholder")}
+            rows={3}
+            onChange={(value) =>
+              dispatch({ type: "STAMM_SET_SENDER_ADDRESS", value })
+            }
+          />
+        )}
+      </EditorSection>
+
       <EditorSection id="sec-letter-addressee" title={t("letter.section.addressee")}>
         <TextField
           id="fld-letter-company"

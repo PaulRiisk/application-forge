@@ -21,12 +21,20 @@ export function StammdatenEditor({ photoUrl, onPhotoChange }: Props) {
   const dispatch = useAppDispatch();
   const t = useT();
   const [anlageDraft, setAnlageDraft] = useState("");
+  const [zeugnisDraft, setZeugnisDraft] = useState("");
 
   const submitAnlage = () => {
     const item = anlageDraft.trim();
     if (!item) return;
     dispatch({ type: "STAMM_ADD_ANLAGE", item });
     setAnlageDraft("");
+  };
+
+  const submitZeugnis = () => {
+    const item = zeugnisDraft.trim();
+    if (!item) return;
+    dispatch({ type: "STAMM_ADD_ZEUGNIS", item });
+    setZeugnisDraft("");
   };
 
   return (
@@ -135,8 +143,14 @@ export function StammdatenEditor({ photoUrl, onPhotoChange }: Props) {
               }
             }}
           />
-          <button type="button" className="row-btn" onClick={submitAnlage}>
-            {t("chip.addBtn")}
+          <button
+            type="button"
+            className="row-btn"
+            onClick={submitAnlage}
+            aria-label={t("chip.addBtn")}
+            title={t("chip.addBtn")}
+          >
+            +
           </button>
         </div>
         {stammdaten.anlagen.map((anlage, i) => (
@@ -186,6 +200,91 @@ export function StammdatenEditor({ photoUrl, onPhotoChange }: Props) {
               type="button"
               className="row-btn danger"
               onClick={() => dispatch({ type: "STAMM_REMOVE_ANLAGE", index: i })}
+              aria-label={t("row.remove")}
+              title={t("row.remove")}
+            >
+              ×
+            </button>
+          </div>
+        ))}
+      </EditorSection>
+
+      <EditorSection id="sec-stamm-zeugnisse" title={t("stamm.section.zeugnisse")}>
+        <p className="helper-text">{t("stamm.zeugnisse.helper")}</p>
+        <div className="chip-input-row">
+          <input
+            type="text"
+            value={zeugnisDraft}
+            placeholder={t("stamm.zeugnisse.addPlaceholder")}
+            onChange={(e) => setZeugnisDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                submitZeugnis();
+              }
+            }}
+          />
+          <button
+            type="button"
+            className="row-btn"
+            onClick={submitZeugnis}
+            aria-label={t("chip.addBtn")}
+            title={t("chip.addBtn")}
+          >
+            +
+          </button>
+        </div>
+        {stammdaten.zeugnisse.map((zeugnis, i) => (
+          <div className="kv-row" key={i}>
+            <input
+              type="text"
+              style={{ gridColumn: "1 / 3" }}
+              value={zeugnis}
+              placeholder={t("stamm.zeugnisse.itemPlaceholder")}
+              onChange={(e) =>
+                dispatch({
+                  type: "STAMM_UPDATE_ZEUGNIS",
+                  index: i,
+                  value: e.target.value,
+                })
+              }
+            />
+            <button
+              type="button"
+              className="row-btn"
+              disabled={i === 0}
+              onClick={() =>
+                dispatch({
+                  type: "STAMM_MOVE_ZEUGNIS",
+                  index: i,
+                  direction: "up",
+                })
+              }
+              aria-label={t("row.moveUp")}
+              title={t("row.moveUp")}
+            >
+              ↑
+            </button>
+            <button
+              type="button"
+              className="row-btn"
+              disabled={i === stammdaten.zeugnisse.length - 1}
+              onClick={() =>
+                dispatch({
+                  type: "STAMM_MOVE_ZEUGNIS",
+                  index: i,
+                  direction: "down",
+                })
+              }
+              aria-label={t("row.moveDown")}
+              title={t("row.moveDown")}
+            >
+              ↓
+            </button>
+            <button
+              type="button"
+              className="row-btn danger"
+              onClick={() => dispatch({ type: "STAMM_REMOVE_ZEUGNIS", index: i })}
               aria-label={t("row.remove")}
               title={t("row.remove")}
             >
