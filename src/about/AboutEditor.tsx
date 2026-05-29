@@ -209,6 +209,7 @@ export function AboutEditor() {
       <section className="editor-section" id="sec-about-warum">
         <h2>{t("about.section.warum")}</h2>
         <TextAreaField
+          id="fld-about-warum"
           label={t("about.warum.label")}
           value={about.warumSoftware}
           placeholder={t("about.warum.placeholder")}
@@ -275,6 +276,7 @@ export function AboutEditor() {
       <section className="editor-section">
         <h2>{t("about.section.footer")}</h2>
         <TextField
+          id="fld-about-footer"
           label={t("about.footer.label")}
           value={about.footer}
           placeholder={t("about.footer.placeholder")}

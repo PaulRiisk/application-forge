@@ -18,6 +18,7 @@ export function CvEditor() {
     <div className="editor">
       <EditorSection id="sec-cv-profile" title={t("cv.section.profile")}>
         <TextAreaField
+          id="fld-cv-profile"
           label={t("cv.field.profile")}
           value={cv.profile}
           placeholder={t("cv.field.profile.placeholder")}

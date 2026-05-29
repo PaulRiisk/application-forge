@@ -48,6 +48,7 @@ export const STRINGS = {
     "palette.placeholder": "Springe zu Feld, Sektion, Aktion…",
     "palette.empty": "Keine Treffer",
     "palette.group.fields": "Felder",
+    "palette.group.sections": "Sektionen",
     "palette.group.actions": "Aktionen",
 
     // generic row controls
@@ -285,6 +286,7 @@ export const STRINGS = {
     "palette.placeholder": "Jump to field, section, action…",
     "palette.empty": "No matches",
     "palette.group.fields": "Fields",
+    "palette.group.sections": "Sections",
     "palette.group.actions": "Actions",
 
     // generic row controls

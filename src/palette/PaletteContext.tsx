@@ -24,7 +24,8 @@ type PaletteContextValue = {
   open: boolean;
   openPalette: () => void;
   closePalette: () => void;
-  navigateTo: (tab: TabId, sectionId: string) => void;
+  // jump to a section; pass fieldId to also focus a specific field inside it
+  navigateTo: (tab: TabId, sectionId: string, fieldId?: string) => void;
   // current nonce if this section is the active jump target, else null
   navNonceFor: (sectionId: string) => number | null;
 };
@@ -91,7 +92,7 @@ export function PaletteProvider({
   }, [open, closePalette]);
 
   const navigateTo = useCallback(
-    (tab: TabId, sectionId: string) => {
+    (tab: TabId, sectionId: string, fieldId?: string) => {
       setActiveTab(tab);
       // bump the nonce so EditorSection re-opens even on a repeat jump
       setNavTarget((prev) => ({ sectionId, nonce: (prev?.nonce ?? 0) + 1 }));
@@ -99,14 +100,15 @@ export function PaletteProvider({
         // let the tab body mount + lay out before we touch the DOM
         await nextFrame();
         await nextFrame();
-        const el = document.getElementById(sectionId);
-        if (!el) return;
-        el.scrollIntoView({ block: "start", behavior: "smooth" });
-        // focus the first real field, never the collapse-toggle header
-        const focusable = el.querySelector<HTMLElement>(
-          "input, textarea, select",
-        );
-        focusable?.focus();
+        const section = document.getElementById(sectionId);
+        if (!section) return;
+        // when targeting a specific field, scroll + focus it; otherwise scroll
+        // the section and focus its first field, never the collapse toggle
+        const target = fieldId
+          ? document.getElementById(fieldId)
+          : section.querySelector<HTMLElement>("input, textarea, select");
+        (target ?? section).scrollIntoView({ block: "start", behavior: "smooth" });
+        target?.focus();
       })();
     },
     [setActiveTab],

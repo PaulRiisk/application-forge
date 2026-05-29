@@ -52,18 +52,21 @@ export function StammdatenEditor({ photoUrl, onPhotoChange }: Props) {
 
       <EditorSection id="sec-stamm-identity" title={t("stamm.section.identity")}>
         <TextField
+          id="fld-stamm-name"
           label={t("stamm.field.name")}
           value={stammdaten.name}
           placeholder={t("stamm.field.name.placeholder")}
           onChange={(value) => dispatch({ type: "STAMM_SET_NAME", value })}
         />
         <TextField
+          id="fld-stamm-title"
           label={t("stamm.field.title")}
           value={stammdaten.title}
           placeholder={t("stamm.field.title.placeholder")}
           onChange={(value) => dispatch({ type: "STAMM_SET_TITLE", value })}
         />
         <TextAreaField
+          id="fld-stamm-kurz"
           label={t("stamm.field.kurz")}
           value={stammdaten.kurz}
           placeholder={t("stamm.field.kurz.placeholder")}
@@ -92,6 +95,7 @@ export function StammdatenEditor({ photoUrl, onPhotoChange }: Props) {
 
       <EditorSection id="sec-stamm-schwerpunkt" title={t("stamm.section.schwerpunkt")}>
         <TextField
+          id="fld-stamm-schwerpunkt-heading"
           label={t("stamm.schwerpunkt.heading")}
           value={stammdaten.schwerpunkt.heading}
           placeholder={t("stamm.schwerpunkt.headingPlaceholder")}

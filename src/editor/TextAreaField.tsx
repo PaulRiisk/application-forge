@@ -1,6 +1,7 @@
 // labeled multi-line textarea
 
 type Props = {
+  id?: string;
   label: string;
   value: string;
   onChange: (value: string) => void;
@@ -9,6 +10,7 @@ type Props = {
 };
 
 export function TextAreaField({
+  id,
   label,
   value,
   onChange,
@@ -17,8 +19,9 @@ export function TextAreaField({
 }: Props) {
   return (
     <div className="field">
-      <label>{label}</label>
+      <label htmlFor={id}>{label}</label>
       <textarea
+        id={id}
         value={value}
         placeholder={placeholder}
         rows={rows}

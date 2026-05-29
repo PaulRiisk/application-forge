@@ -1,17 +1,19 @@
 // labeled single-line text input
 
 type Props = {
+  id?: string;
   label: string;
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
 };
 
-export function TextField({ label, value, onChange, placeholder }: Props) {
+export function TextField({ id, label, value, onChange, placeholder }: Props) {
   return (
     <div className="field">
-      <label>{label}</label>
+      <label htmlFor={id}>{label}</label>
       <input
+        id={id}
         type="text"
         value={value}
         placeholder={placeholder}

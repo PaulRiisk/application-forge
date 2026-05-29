@@ -60,12 +60,14 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
     <>
       <EditorSection id="sec-letter-addressee" title={t("letter.section.addressee")}>
         <TextField
+          id="fld-letter-company"
           label={t("letter.field.company")}
           value={active.company}
           placeholder={t("letter.field.company.placeholder")}
           onChange={(company) => update({ company })}
         />
         <TextAreaField
+          id="fld-letter-recipient"
           label={t("letter.field.recipient")}
           value={active.recipient.join("\n")}
           placeholder={t("letter.field.recipient.placeholder")}
@@ -76,14 +78,16 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
 
       <EditorSection id="sec-letter-dateCity" title={t("letter.section.dateCity")}>
         <div className="field">
-          <label>{t("letter.field.date")}</label>
+          <label htmlFor="fld-letter-date">{t("letter.field.date")}</label>
           <input
+            id="fld-letter-date"
             type="date"
             value={active.date}
             onChange={(e) => update({ date: e.target.value })}
           />
         </div>
         <TextField
+          id="fld-letter-cityOverride"
           label={t("letter.field.cityOverride")}
           value={active.cityOverride ?? ""}
           placeholder={t("letter.field.cityOverride.placeholder")}
@@ -93,12 +97,14 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
 
       <EditorSection id="sec-letter-subject" title={t("letter.section.subject")}>
         <TextField
+          id="fld-letter-subject"
           label={t("letter.field.subject")}
           value={active.subject}
           placeholder={t("letter.field.subject.placeholder")}
           onChange={(subject) => update({ subject })}
         />
         <TextField
+          id="fld-letter-reference"
           label={t("letter.field.reference")}
           value={active.reference}
           placeholder={t("letter.field.reference.placeholder")}

@@ -1,5 +1,5 @@
-// the palette modal: a filtered, grouped listbox over nav targets + actions
-// keyboard ↑/↓ + Enter, mouse hover/click, Esc / outside-click to close
+// the palette modal: a fuzzy-filtered, grouped listbox over fields, sections
+// and actions. keyboard ↑/↓ + Enter, mouse hover/click, Esc / outside-click.
 // open-state + navigateTo come from PaletteContext. CommandPalette gates on
 // open; PaletteBody holds the per-session state and is remounted on each open
 // (via key) so query/selection start fresh without a reset effect
@@ -9,7 +9,13 @@ import { useApp, useAppDispatch } from "../state/AppContext";
 import { useLocale } from "../i18n/LocaleContext";
 import { PRESETS } from "../theme/presets";
 import { usePalette } from "./PaletteContext";
-import { ACTION_ENTRIES, NAV_ENTRIES, type ActionKind } from "./registry";
+import {
+  ACTION_ENTRIES,
+  FIELD_ENTRIES,
+  NAV_ENTRIES,
+  type ActionKind,
+} from "./registry";
+import { fuzzyScore } from "./fuzzy";
 import "./palette.css";
 
 type Props = {
@@ -19,14 +25,24 @@ type Props = {
   onExport: () => void;
 };
 
-// a flattened, runnable command with a resolved display label
+type Group = "fields" | "sections" | "actions";
+
+// a flattened, runnable command with a resolved display label.
+// `terms` are the strings the fuzzy matcher scores against (label + keywords)
 type Command = {
   id: string;
   label: string;
-  haystack: string;
-  group: "fields" | "actions";
+  terms: string[];
+  group: Group;
   run: () => void;
 };
+
+// rendered top-to-bottom in this order; the flat index follows the same order
+const GROUP_ORDER: { group: Group; headingKey: string }[] = [
+  { group: "fields", headingKey: "palette.group.fields" },
+  { group: "sections", headingKey: "palette.group.sections" },
+  { group: "actions", headingKey: "palette.group.actions" },
+];
 
 export function CommandPalette(props: Props) {
   const { open } = usePalette();
@@ -72,41 +88,63 @@ function PaletteBody({ onSave, onLoad, onReset, onExport }: Props) {
 
   // full command list (translated); rebuilt only when the locale changes
   const commands = useMemo<Command[]>(() => {
-    const build = (
-      entries: { id: string; labelKey: string; keywords?: string[] }[],
-      group: "fields" | "actions",
-      run: (id: string) => void,
-    ): Command[] =>
-      entries.map((e) => {
-        const label = t(e.labelKey);
-        return {
-          id: e.id,
-          label,
-          haystack: [label, ...(e.keywords ?? [])].join(" ").toLowerCase(),
-          group,
-          run: () => run(e.id),
-        };
-      });
+    const terms = (labelKey: string, keywords?: string[]) => [
+      t(labelKey),
+      ...(keywords ?? []),
+    ];
 
-    const navCmds = build(NAV_ENTRIES, "fields", (id) => {
-      const entry = NAV_ENTRIES.find((n) => n.id === id)!;
-      navigateTo(entry.tab, entry.sectionId);
-    });
-    const actionCmds = build(ACTION_ENTRIES, "actions", (id) => {
-      const entry = ACTION_ENTRIES.find((a) => a.id === id)!;
-      runAction(entry.action);
-    });
-    return [...navCmds, ...actionCmds];
+    const fieldCmds: Command[] = FIELD_ENTRIES.map((e) => ({
+      id: e.id,
+      label: t(e.labelKey),
+      terms: terms(e.labelKey, e.keywords),
+      group: "fields",
+      run: () => navigateTo(e.tab, e.sectionId, e.fieldId),
+    }));
+    const sectionCmds: Command[] = NAV_ENTRIES.map((e) => ({
+      id: e.id,
+      label: t(e.labelKey),
+      terms: terms(e.labelKey, e.keywords),
+      group: "sections",
+      run: () => navigateTo(e.tab, e.sectionId),
+    }));
+    const actionCmds: Command[] = ACTION_ENTRIES.map((e) => ({
+      id: e.id,
+      label: t(e.labelKey),
+      terms: terms(e.labelKey, e.keywords),
+      group: "actions",
+      run: () => runAction(e.action),
+    }));
+    return [...fieldCmds, ...sectionCmds, ...actionCmds];
     // t identity changes with locale; navigateTo/runAction read fresh refs
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locale]);
 
-  const q = query.trim().toLowerCase();
-  const filtered = q ? commands.filter((c) => c.haystack.includes(q)) : commands;
-  const fieldResults = filtered.filter((c) => c.group === "fields");
-  const actionResults = filtered.filter((c) => c.group === "actions");
+  const q = query.trim();
+
+  // score each command (best of its terms); drop non-matches when querying
+  const scored = useMemo(() => {
+    if (!q) return commands.map((cmd) => ({ cmd, score: 0 }));
+    const out: { cmd: Command; score: number }[] = [];
+    for (const cmd of commands) {
+      let best: number | null = null;
+      for (const term of cmd.terms) {
+        const s = fuzzyScore(term, q);
+        if (s !== null && (best === null || s > best)) best = s;
+      }
+      if (best !== null) out.push({ cmd, score: best });
+    }
+    return out;
+  }, [commands, q]);
+
+  // group, and when querying sort each group by score (stable order otherwise)
+  const grouped = GROUP_ORDER.map(({ group, headingKey }) => {
+    const items = scored.filter((s) => s.cmd.group === group);
+    if (q) items.sort((a, b) => b.score - a.score);
+    return { headingKey, items: items.map((s) => s.cmd) };
+  });
+
   // flat order must match the rendered order for ↑/↓ indexing
-  const ordered = [...fieldResults, ...actionResults];
+  const ordered = grouped.flatMap((g) => g.items);
 
   // clamp on read so a shrinking list never points past the end (no effect)
   const safeIndex = Math.min(activeIndex, Math.max(0, ordered.length - 1));
@@ -150,7 +188,7 @@ function PaletteBody({ onSave, onLoad, onReset, onExport }: Props) {
   ) => {
     if (items.length === 0) return null;
     return (
-      <li className="palette-group" role="presentation">
+      <li key={headingKey} className="palette-group" role="presentation">
         <div className="palette-group-label">{t(headingKey)}</div>
         <ul role="presentation">
           {items.map((cmd, i) => {
@@ -181,6 +219,9 @@ function PaletteBody({ onSave, onLoad, onReset, onExport }: Props) {
   };
 
   const activeCmd = ordered[safeIndex];
+
+  // running flat index so each group knows where it starts in `ordered`
+  let flatStart = 0;
 
   return (
     <div
@@ -217,14 +258,11 @@ function PaletteBody({ onSave, onLoad, onReset, onExport }: Props) {
               {t("palette.empty")}
             </li>
           ) : (
-            <>
-              {renderGroup("palette.group.fields", fieldResults, 0)}
-              {renderGroup(
-                "palette.group.actions",
-                actionResults,
-                fieldResults.length,
-              )}
-            </>
+            grouped.map(({ headingKey, items }) => {
+              const node = renderGroup(headingKey, items, flatStart);
+              flatStart += items.length;
+              return node;
+            })
           )}
         </ul>
       </div>
