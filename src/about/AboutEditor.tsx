@@ -145,10 +145,12 @@ function ItemEditor({
 }
 
 function ItemListSection({
+  sectionId,
   headingValue,
   onHeadingChange,
   section,
 }: {
+  sectionId: string;
   headingValue: string;
   onHeadingChange: (value: string) => void;
   section: ItemSection;
@@ -158,7 +160,7 @@ function ItemListSection({
   const t = useT();
   const items = about[section];
   return (
-    <section className="editor-section">
+    <section className="editor-section" id={sectionId}>
       <TextField
         label={t("about.heading.label")}
         value={headingValue}
@@ -204,7 +206,7 @@ export function AboutEditor() {
 
   return (
     <div className="editor">
-      <section className="editor-section">
+      <section className="editor-section" id="sec-about-warum">
         <h2>{t("about.section.warum")}</h2>
         <TextAreaField
           label={t("about.warum.label")}
@@ -215,7 +217,7 @@ export function AboutEditor() {
         />
       </section>
 
-      <section className="editor-section">
+      <section className="editor-section" id="sec-about-staerken">
         <TextField
           label={t("about.heading.label")}
           value={about.staerkenHeading}
@@ -254,6 +256,7 @@ export function AboutEditor() {
       </section>
 
       <ItemListSection
+        sectionId="sec-about-wasIchBaue"
         headingValue={about.wasIchBaueHeading}
         onHeadingChange={(value) =>
           dispatch({ type: "ABOUT_SET_WASICHBAUE_HEADING", value })
@@ -261,6 +264,7 @@ export function AboutEditor() {
         section="wasIchBaue"
       />
       <ItemListSection
+        sectionId="sec-about-ausserhalb"
         headingValue={about.ausserhalbHeading}
         onHeadingChange={(value) =>
           dispatch({ type: "ABOUT_SET_AUSSERHALB_HEADING", value })

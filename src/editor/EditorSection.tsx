@@ -1,19 +1,29 @@
 // collapsible editor section card with accent left border
+// an optional id makes the section a command-palette jump target: when the
+// palette targets it, useNavNonce flips and we force the section open
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown } from "lucide-react";
+import { useNavNonce } from "../palette/PaletteContext";
 
 type Props = {
+  id?: string;
   title: string;
   defaultOpen?: boolean;
   children: React.ReactNode;
 };
 
-export function EditorSection({ title, defaultOpen = true, children }: Props) {
+export function EditorSection({ id, title, defaultOpen = true, children }: Props) {
   const [open, setOpen] = useState(defaultOpen);
 
+  // force open when the palette jumps here (nonce changes per jump)
+  const navNonce = useNavNonce(id);
+  useEffect(() => {
+    if (navNonce !== null) setOpen(true);
+  }, [navNonce]);
+
   return (
-    <section className="editor-section">
+    <section className="editor-section" id={id}>
       <div
         className="editor-section-header"
         onClick={() => setOpen((v) => !v)}

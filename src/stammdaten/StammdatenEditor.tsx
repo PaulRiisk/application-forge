@@ -31,7 +31,7 @@ export function StammdatenEditor({ photoUrl, onPhotoChange }: Props) {
 
   return (
     <div className="editor">
-      <EditorSection title={t("stamm.section.docLocale")}>
+      <EditorSection id="sec-stamm-docLocale" title={t("stamm.section.docLocale")}>
         <div className="field">
           <label>{t("stamm.docLocale.label")}</label>
           <select
@@ -50,7 +50,7 @@ export function StammdatenEditor({ photoUrl, onPhotoChange }: Props) {
         <p className="helper-text">{t("stamm.docLocale.helper")}</p>
       </EditorSection>
 
-      <EditorSection title={t("stamm.section.identity")}>
+      <EditorSection id="sec-stamm-identity" title={t("stamm.section.identity")}>
         <TextField
           label={t("stamm.field.name")}
           value={stammdaten.name}
@@ -71,7 +71,7 @@ export function StammdatenEditor({ photoUrl, onPhotoChange }: Props) {
         />
       </EditorSection>
 
-      <EditorSection title={t("stamm.section.contact")}>
+      <EditorSection id="sec-stamm-contact" title={t("stamm.section.contact")}>
         <KeyValueList
           rows={stammdaten.contact}
           labelPlaceholder={t("stamm.contact.labelPlaceholder")}
@@ -90,7 +90,7 @@ export function StammdatenEditor({ photoUrl, onPhotoChange }: Props) {
 
       <PhotoField photoUrl={photoUrl} onChange={onPhotoChange} />
 
-      <EditorSection title={t("stamm.section.schwerpunkt")}>
+      <EditorSection id="sec-stamm-schwerpunkt" title={t("stamm.section.schwerpunkt")}>
         <TextField
           label={t("stamm.schwerpunkt.heading")}
           value={stammdaten.schwerpunkt.heading}
@@ -116,7 +116,7 @@ export function StammdatenEditor({ photoUrl, onPhotoChange }: Props) {
         />
       </EditorSection>
 
-      <EditorSection title={t("stamm.section.anlagen")}>
+      <EditorSection id="sec-stamm-anlagen" title={t("stamm.section.anlagen")}>
         <p className="helper-text">{t("stamm.anlagen.helper")}</p>
         <div className="chip-input-row">
           <input

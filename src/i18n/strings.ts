@@ -44,6 +44,12 @@ export const STRINGS = {
     "preview.toolbar.reset": "Zoom",
     "preview.toolbar.resetTitle": "Zoom auf 100% zurücksetzen",
 
+    // command palette
+    "palette.placeholder": "Springe zu Feld, Sektion, Aktion…",
+    "palette.empty": "Keine Treffer",
+    "palette.group.fields": "Felder",
+    "palette.group.actions": "Aktionen",
+
     // generic row controls
     "row.moveUp": "Nach oben",
     "row.moveDown": "Nach unten",
@@ -274,6 +280,12 @@ export const STRINGS = {
     "preview.toolbar.zoomIn": "Zoom in",
     "preview.toolbar.reset": "Reset",
     "preview.toolbar.resetTitle": "Reset zoom to 100%",
+
+    // command palette
+    "palette.placeholder": "Jump to field, section, action…",
+    "palette.empty": "No matches",
+    "palette.group.fields": "Fields",
+    "palette.group.actions": "Actions",
 
     // generic row controls
     "row.moveUp": "Move up",

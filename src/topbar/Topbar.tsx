@@ -14,6 +14,7 @@ import {
 import { useUiTheme } from "./useUiTheme";
 import { useLocale } from "../i18n/LocaleContext";
 import { useApp, useAppDispatch } from "../state/AppContext";
+import { usePalette } from "../palette/PaletteContext";
 import { PRESETS, PRESET_ORDER } from "../theme/presets";
 import type { LayoutMode } from "../types";
 import "./topbar.css";
@@ -66,6 +67,7 @@ export function Topbar({ activeTab, onSave, onLoad, onReset, onExport }: Props) 
 
   const { stammdaten } = useApp();
   const dispatch = useAppDispatch();
+  const { openPalette } = usePalette();
   const { theme, mode } = stammdaten;
 
   const tabLabel = locale === "de"
@@ -84,22 +86,24 @@ export function Topbar({ activeTab, onSave, onLoad, onReset, onExport }: Props) 
         <span className="topbar-active-tab">{tabLabel}</span>
       </div>
 
-      {/* centre: search (decorative / future) */}
+      {/* centre: search — opens the command palette */}
       <div className="topbar-search-wrap">
-        <div className="topbar-search">
+        <button
+          type="button"
+          className="topbar-search"
+          onClick={openPalette}
+          title={locale === "de" ? "Befehlspalette öffnen" : "Open command palette"}
+        >
           <svg className="topbar-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
           </svg>
-          <input
-            className="topbar-search-input"
-            type="text"
-            placeholder={locale === "de" ? "Springe zu Feld, Sektion, Aktion…" : "Jump to field, section, action…"}
-            readOnly
-          />
-          <span className="topbar-search-kbd">
-            <kbd>⌘</kbd><kbd>K</kbd>
+          <span className="topbar-search-input">
+            {locale === "de" ? "Springe zu Feld, Sektion, Aktion…" : "Jump to field, section, action…"}
           </span>
-        </div>
+          <span className="topbar-search-kbd">
+            <kbd>Ctrl</kbd><kbd>K</kbd>
+          </span>
+        </button>
       </div>
 
       {/* right: action icons */}

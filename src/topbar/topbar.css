@@ -54,7 +54,7 @@
   background: var(--ui-bg);
   border: 1px solid var(--ui-border);
   border-radius: 8px;
-  cursor: default;
+  cursor: pointer;
   transition: border-color 0.15s;
 }
 
@@ -69,16 +69,9 @@
 
 .topbar-search-input {
   flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
+  text-align: left;
   font: inherit;
   font-size: 13px;
-  color: var(--ui-text-muted);
-  cursor: default;
-}
-
-.topbar-search-input::placeholder {
   color: var(--ui-text-soft);
 }
 

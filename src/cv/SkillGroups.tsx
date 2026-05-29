@@ -11,7 +11,7 @@ export function SkillGroups() {
   const { skillGroups } = cv;
 
   return (
-    <div className="editor-section">
+    <div className="editor-section" id="sec-cv-skills">
       <h2>{t("cv.section.skills")}</h2>
       <div style={{ padding: "10px 14px 14px" }}>
       {skillGroups.map((group, i) => (

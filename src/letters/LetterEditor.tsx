@@ -58,7 +58,7 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
 
   return (
     <>
-      <EditorSection title={t("letter.section.addressee")}>
+      <EditorSection id="sec-letter-addressee" title={t("letter.section.addressee")}>
         <TextField
           label={t("letter.field.company")}
           value={active.company}
@@ -74,7 +74,7 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
         />
       </EditorSection>
 
-      <EditorSection title={t("letter.section.dateCity")}>
+      <EditorSection id="sec-letter-dateCity" title={t("letter.section.dateCity")}>
         <div className="field">
           <label>{t("letter.field.date")}</label>
           <input
@@ -91,7 +91,7 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
         />
       </EditorSection>
 
-      <EditorSection title={t("letter.section.subject")}>
+      <EditorSection id="sec-letter-subject" title={t("letter.section.subject")}>
         <TextField
           label={t("letter.field.subject")}
           value={active.subject}
@@ -106,7 +106,7 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
         />
       </EditorSection>
 
-      <EditorSection title={t("letter.section.body")}>
+      <EditorSection id="sec-letter-body" title={t("letter.section.body")}>
         <MarkdownToolbar
           textareaRef={bodyRef}
           value={active.body}
@@ -137,7 +137,7 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
         </label>
       </EditorSection>
 
-      <EditorSection title={t("letter.section.signature")} defaultOpen={false}>
+      <EditorSection id="sec-letter-signature" title={t("letter.section.signature")} defaultOpen={false}>
         {signatureUrl && (
           <img
             className="signature-preview"

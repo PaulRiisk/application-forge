@@ -11,7 +11,7 @@ export function SidebarSections() {
   const { sidebarSections } = cv;
 
   return (
-    <div className="editor-section">
+    <div className="editor-section" id="sec-cv-sidebar">
       <h2>{t("cv.section.sidebarSections")}</h2>
       {sidebarSections.map((section, i) => (
         <div className="skill-group" key={section.id}>

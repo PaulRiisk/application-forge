@@ -19,6 +19,7 @@ import { SplitPane } from "./layout/SplitPane";
 import { ExportDialog, type ExportSelection } from "./topbar/ExportDialog";
 import { ResetDialog } from "./topbar/ResetDialog";
 import { ExportHost, type ExportRefs } from "./pdf/ExportHost";
+import { PaletteProvider } from "./palette/PaletteContext";
 import type { DocLocale } from "./types";
 import {
   exportApplicationPdf,
@@ -159,6 +160,13 @@ function App() {
   const photoSrc = photoUrl ?? `${import.meta.env.BASE_URL}placeholder_cv.png`;
 
   return (
+    <PaletteProvider
+      setActiveTab={setActiveTab}
+      onSave={handleSave}
+      onLoad={handleLoad}
+      onReset={() => setResetOpen(true)}
+      onExport={() => setExportOpen(true)}
+    >
     <div className="app">
       <Topbar
         activeTab={activeTab}
@@ -243,6 +251,7 @@ function App() {
         onReset={handleReset}
       />
     </div>
+    </PaletteProvider>
   );
 }
 
