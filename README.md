@@ -1,6 +1,6 @@
 # Application Forge
 
-A browser-only tool for writing job applications. Fill in your details once, pick an accent color, and export a cover page, cover letter, CV, and about-me page as a single PDF. All formatting is handled for you.
+A browser-only tool https://paulriisk.github.io/application-forge/ for writing job applications. Fill in your details once, pick an accent color, and export a cover page, cover letter, CV, and about-me page as a single PDF. All formatting is handled for you.
 
 Successor to [cv-builder](https://github.com/paulriisk/cv-builder) prototype, extended from a single CV to a full four-document application set with a **shared design system and reworked UI.**
 
