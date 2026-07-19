@@ -34,12 +34,12 @@ jobs:
       - run: npm ci
       - run: npm run build
 
-      # enablement lets the action create the pages site itself, so the
-      # repo doesn't need pages switched on manually in the settings first
-      - uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - uses: actions/upload-pages-artifact@v3
+      # note: no `enablement: true` — creating a pages site needs a user token
+      # (PAT with repo scope); the workflow's GITHUB_TOKEN is always rejected
+      # with 403 for that call. pages must be switched on once in
+      # settings → pages → source: "GitHub Actions"
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: dist
 
@@ -51,4 +51,4 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

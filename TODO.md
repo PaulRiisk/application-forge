@@ -21,10 +21,14 @@ Package the app as a standalone `.exe` (Windows) / `.app` (Mac) that users can d
 
 ## GitHub Pages deploy
 
-Workflow exists and self-enables Pages (`configure-pages` with
-`enablement: true`), actions bumped off the deprecated node20 runners.
-Remaining:
+Workflow is in place and all actions run on node24 runners. One manual
+step is unavoidable and blocks the first green run:
 
+- **Settings → Pages → Source: "GitHub Actions"** (one click, once).
+  `enablement: true` on `configure-pages` does *not* work around this:
+  the REST call that creates a Pages site needs a user token (PAT with
+  `repo` scope), and the workflow's `GITHUB_TOKEN` is rejected with 403
+  no matter what `permissions:` says.
 - README needs a live link once the first deploy is green
   (expected: https://paulriisk.github.io/application-forge/).
 
