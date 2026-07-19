@@ -2,7 +2,7 @@
 // user picks which documents to include and (if anschreiben is in) which letter
 // the dialog owns selection state; the parent runs the actual export
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useApp } from "../state/AppContext";
 import { useT } from "../i18n/LocaleContext";
 
@@ -21,6 +21,12 @@ type Props = {
 };
 
 export function ExportDialog({ open, onCancel, onExport }: Props) {
+  // remount the body on each open so the letter selection re-seeds from the
+  // currently active letter without a sync effect
+  return open ? <ExportDialogBody onCancel={onCancel} onExport={onExport} /> : null;
+}
+
+function ExportDialogBody({ onCancel, onExport }: Omit<Props, "open">) {
   const { letters } = useApp();
   const t = useT();
 
@@ -29,13 +35,6 @@ export function ExportDialog({ open, onCancel, onExport }: Props) {
   const [lebenslauf, setLebenslauf] = useState(true);
   const [about, setAbout] = useState(true);
   const [letterId, setLetterId] = useState(letters.activeId);
-
-  // sync letter selection if the active letter changes between opens
-  useEffect(() => {
-    if (open) setLetterId(letters.activeId);
-  }, [open, letters.activeId]);
-
-  if (!open) return null;
 
   const noneSelected = !deckblatt && !anschreiben && !lebenslauf && !about;
 

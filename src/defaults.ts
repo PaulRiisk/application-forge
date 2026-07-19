@@ -108,6 +108,7 @@ function createDefaultLetter(c: DefaultContent): CoverLetter {
     reference: "",
     body: "",
     showAnlagen: true,
+    status: "draft",
   };
 }
 

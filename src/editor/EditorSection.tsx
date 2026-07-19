@@ -2,7 +2,7 @@
 // an optional id makes the section a command-palette jump target: when the
 // palette targets it, useNavNonce flips and we force the section open
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { useNavNonce } from "../palette/PaletteContext";
 
@@ -16,11 +16,15 @@ type Props = {
 export function EditorSection({ id, title, defaultOpen = true, children }: Props) {
   const [open, setOpen] = useState(defaultOpen);
 
-  // force open when the palette jumps here (nonce changes per jump)
+  // force open when the palette jumps here (nonce changes per jump).
+  // state is adjusted during render instead of in an effect so the section
+  // is already open in the same commit the jump happens
   const navNonce = useNavNonce(id);
-  useEffect(() => {
-    if (navNonce !== null) setOpen(true);
-  }, [navNonce]);
+  const [seenNonce, setSeenNonce] = useState(navNonce);
+  if (navNonce !== seenNonce) {
+    setSeenNonce(navNonce);
+    if (navNonce !== null && !open) setOpen(true);
+  }
 
   return (
     <section className="editor-section" id={id}>

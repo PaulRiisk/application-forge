@@ -43,6 +43,17 @@ when the rest is locked down. When picking this back up:
 
 Resolved items, kept briefly for context:
 
+- **"Definitive version" batch (Jul 2026)** — undo/redo (Ctrl+Z/Y, coalesced
+  history around the reducer); multi-page PDF export (overflowing pages are
+  sliced into extra A4 pages instead of squeezed); photo/signature persisted
+  in IndexedDB (still never in the exported JSON); per-letter status tracking
+  (draft/sent/reply, badge in the letter list); `{firma}` placeholder in
+  subject/body + warning when another letter's company is still in the text;
+  plain-text copy of the letter body; letter duplicate gets today's date;
+  shared city matcher for deckblatt + anschreiben; EN date format; localized
+  cv "profil" label; umlaut-aware filename slugs; word-boundary italics;
+  per-letter backfills on load; export host only mounted while exporting.
+
 - **UI language pass** — DE/EN toggle in topbar + full string map (`src/i18n`).
 - **Document default language** — `defaultLocale` on stammdaten, dropdown
   in the editor, reseed-with-confirm on change (option A).

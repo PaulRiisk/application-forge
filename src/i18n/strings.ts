@@ -50,6 +50,8 @@ export const STRINGS = {
     "palette.group.fields": "Felder",
     "palette.group.sections": "Sektionen",
     "palette.group.actions": "Aktionen",
+    "palette.act.undo": "Rückgängig (Strg+Z)",
+    "palette.act.redo": "Wiederholen (Strg+Y)",
 
     // generic row controls
     "row.moveUp": "Nach oben",
@@ -105,7 +107,7 @@ export const STRINGS = {
     "photo.title": "Profilfoto",
     "photo.toggle": "Foto auf Deckblatt anzeigen",
     "photo.helper":
-      "Verwende ein quadratisches Bild (1:1). Nicht-quadratische Bilder werden zentriert beschnitten. Das Foto wird nicht mitgespeichert — bitte nach dem Laden einer Datei erneut hochladen.",
+      "Verwende ein quadratisches Bild (1:1). Nicht-quadratische Bilder werden zentriert beschnitten. Das Foto wird lokal in diesem Browser gespeichert, ist aber nicht Teil der JSON-Datei — auf einem anderen Gerät bitte erneut hochladen.",
     "photo.remove": "Foto entfernen",
     "photo.previewAlt": "Foto-Vorschau",
 
@@ -139,12 +141,22 @@ export const STRINGS = {
     "letter.field.body.placeholder":
       "Sehr geehrte Frau Mustermann,\n\nals dualer Student...",
     "letter.body.helper":
-      "Toolbar fügt Markdown-Marker ein: **fett**, _kursiv_, - Aufzählung. Leerzeile = Absatz.",
+      "Toolbar fügt Markdown-Marker ein: **fett**, _kursiv_, - Aufzählung. Leerzeile = Absatz. {firma} wird durch den Firmennamen ersetzt.",
+    "letter.warn.company": (names: string) =>
+      `Im Text steht noch „${names}" — prüfe, ob die Firma zu diesem Anschreiben passt.`,
+    "letter.copyPlain": "Text kopieren (ohne Formatierung)",
+    "letter.copyPlain.done": "Kopiert ✓",
+    "letter.section.status": "Status",
+    "letter.status.draft": "Entwurf",
+    "letter.status.sent": "Verschickt",
+    "letter.status.answered": "Rückmeldung",
+    "letter.status.helper":
+      "Nur für deine Übersicht in der Briefliste — erscheint nirgends im PDF.",
     "letter.field.showAnlagen": "Anlagen im Fuß anzeigen",
     "letter.section.signature": "Unterschrift (optional)",
     "letter.signature.previewAlt": "Vorschau Unterschrift",
     "letter.signature.helper":
-      "Unterschrift wird nicht mitgespeichert — bitte nach dem Laden einer Datei erneut hochladen.",
+      "Die Unterschrift wird lokal in diesem Browser gespeichert, ist aber nicht Teil der JSON-Datei — auf einem anderen Gerät bitte erneut hochladen.",
     "letter.signature.remove": "Unterschrift entfernen",
 
     // markdown toolbar
@@ -299,6 +311,8 @@ export const STRINGS = {
     "palette.group.fields": "Fields",
     "palette.group.sections": "Sections",
     "palette.group.actions": "Actions",
+    "palette.act.undo": "Undo (Ctrl+Z)",
+    "palette.act.redo": "Redo (Ctrl+Y)",
 
     // generic row controls
     "row.moveUp": "Move up",
@@ -354,7 +368,7 @@ export const STRINGS = {
     "photo.title": "Profile photo",
     "photo.toggle": "Show photo on cover page",
     "photo.helper":
-      "Use a square image (1:1). Non-square images will be center-cropped to fit the circle. Photo is not saved with your data — re-upload after loading a saved file.",
+      "Use a square image (1:1). Non-square images will be center-cropped to fit the circle. The photo is stored locally in this browser but is not part of the JSON file — re-upload it on another device.",
     "photo.remove": "Remove photo",
     "photo.previewAlt": "Profile preview",
 
@@ -389,12 +403,22 @@ export const STRINGS = {
     "letter.field.body.placeholder":
       "Dear Ms. Mustermann,\n\nas a dual student...",
     "letter.body.helper":
-      "Toolbar inserts markdown markers: **bold**, _italic_, - bullet. Blank line = paragraph break.",
+      "Toolbar inserts markdown markers: **bold**, _italic_, - bullet. Blank line = paragraph break. {firma} is replaced with the company name.",
+    "letter.warn.company": (names: string) =>
+      `The text still mentions "${names}" — check the company matches this letter.`,
+    "letter.copyPlain": "Copy as plain text",
+    "letter.copyPlain.done": "Copied ✓",
+    "letter.section.status": "Status",
+    "letter.status.draft": "Draft",
+    "letter.status.sent": "Sent",
+    "letter.status.answered": "Reply received",
+    "letter.status.helper":
+      "For your own tracking in the letter list only — never shown in the PDF.",
     "letter.field.showAnlagen": "Show attachments in footer",
     "letter.section.signature": "Signature image (optional)",
     "letter.signature.previewAlt": "Signature preview",
     "letter.signature.helper":
-      "Signature is not saved with your data — re-upload after loading a saved file.",
+      "The signature is stored locally in this browser but is not part of the JSON file — re-upload it on another device.",
     "letter.signature.remove": "Remove signature",
 
     // markdown toolbar

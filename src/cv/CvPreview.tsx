@@ -3,6 +3,7 @@
 // main column is the entry sections list (experience, education, ...)
 
 import { useApp } from "../state/AppContext";
+import { docStrings } from "../i18n/docStrings";
 
 function renderName(name: string) {
   if (name.includes("\n")) {
@@ -26,6 +27,7 @@ export function CvPreview({ photoUrl }: Props) {
   const { stammdaten, cv } = useApp();
   const isDev = stammdaten.mode === "dev";
   const prefix = isDev ? "// " : "";
+  const d = docStrings(stammdaten.templateLocale);
 
   return (
     <>
@@ -54,7 +56,7 @@ export function CvPreview({ photoUrl }: Props) {
 
         {cv.profile.trim() !== "" && (
           <>
-            <h2 className="sec-label">{prefix}profil</h2>
+            <h2 className="sec-label">{prefix}{d.profil}</h2>
             <p className="cv-profile">{cv.profile}</p>
           </>
         )}

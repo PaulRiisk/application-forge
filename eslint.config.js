@@ -19,4 +19,12 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    // context modules deliberately export provider + hooks together (the
+    // standard react context pattern); the only cost is coarser fast-refresh
+    files: ["**/*Context.tsx"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
 ]);

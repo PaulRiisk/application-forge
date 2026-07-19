@@ -4,6 +4,8 @@
 
 import { useApp } from "../state/AppContext";
 import { docStrings } from "../i18n/docStrings";
+import { applyPlaceholders } from "../letters/placeholders";
+import { findCity } from "./city";
 
 // name splits onto two lines: explicit \n wins, otherwise split a two-word name
 function renderName(name: string) {
@@ -34,10 +36,7 @@ export function CoverPagePreview({ photoUrl }: Props) {
     letters.items.find((l) => l.id === letters.activeId) ?? letters.items[0];
 
   // location row from stammdaten contact, used in "bei Company · City"
-  const locationRow = stammdaten.contact.find(
-    (r) => r.label.toLowerCase().includes("location") || r.label.toLowerCase().includes("ort"),
-  );
-  const city = locationRow?.value.split(",")[0]?.trim() ?? "";
+  const city = findCity(stammdaten.contact);
 
   // named zeugnisse replace the generic "zeugnisse" item when present, so the
   // mappe lists each certificate by name instead of the catch-all label
@@ -59,7 +58,10 @@ export function CoverPagePreview({ photoUrl }: Props) {
     (item, i) => `${String(i + 1).padStart(2, "0")} ${item}`,
   );
 
-  const year = new Date().getFullYear();
+  // kicker year follows the letter date, not the wall clock, so a december
+  // application exported in january still shows the year it belongs to
+  const year =
+    (active && Number(active.date.slice(0, 4))) || new Date().getFullYear();
   const kicker = isDev ? (
     <>
       <span className="caret">&gt;</span> {d.bewerbung} / {year}
@@ -103,7 +105,9 @@ export function CoverPagePreview({ photoUrl }: Props) {
               {isDev ? "// " : ""}
               {d.bewerbungAls}
             </h2>
-            <div className="cover-subject">{active.subject}</div>
+            <div className="cover-subject">
+              {applyPlaceholders(active.subject, active.company)}
+            </div>
             <div className="cover-subject-company">
               {d.bei} {active.company}
               {city ? ` · ${city}` : ""}

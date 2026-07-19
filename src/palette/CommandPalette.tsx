@@ -73,6 +73,10 @@ function PaletteBody({ onSave, onLoad, onReset, onExport }: Props) {
         return onReset();
       case "export":
         return onExport();
+      case "undo":
+        return dispatch({ type: "UNDO" });
+      case "redo":
+        return dispatch({ type: "REDO" });
       case "modeDev":
         return dispatch({ type: "STAMM_SET_MODE", mode: "dev" });
       case "modeClassic":

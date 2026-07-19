@@ -71,6 +71,12 @@ export function LetterList() {
                   }
                 >
                   {letter.label}
+                  {/* tracking badge, only shown once a letter left draft */}
+                  {letter.status !== "draft" && (
+                    <span className={`letter-status status-${letter.status}`}>
+                      {t(`letter.status.${letter.status}`)}
+                    </span>
+                  )}
                 </button>
               )}
               <button

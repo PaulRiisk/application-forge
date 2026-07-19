@@ -15,6 +15,7 @@ import type {
   Entry,
   EntrySection,
   LayoutMode,
+  LetterStatus,
   SidebarRow,
   SidebarSection,
   SkillGroup,
@@ -61,6 +62,7 @@ export type Action =
   | { type: "LETTERS_REMOVE"; id: string }
   | { type: "LETTERS_RENAME"; id: string; label: string }
   | { type: "LETTERS_SET_ACTIVE"; id: string }
+  | { type: "LETTERS_SET_STATUS"; id: string; status: LetterStatus }
   | { type: "LETTER_UPDATE"; patch: Partial<Omit<CoverLetter, "id">> }
   | { type: "CV_SET_PROFILE"; value: string }
   | { type: "CV_ADD_SKILL_GROUP" }
@@ -162,6 +164,24 @@ function moveById<T extends { id: string }>(
   const index = list.findIndex((it) => it.id === id);
   if (index < 0) return list;
   return move(list, index, direction);
+}
+
+// blank letter used by LETTERS_ADD and as the fallback when the last letter
+// is removed (the list is never allowed to become empty)
+function freshLetter(): CoverLetter {
+  return {
+    id: newId(),
+    label: "Untitled letter",
+    company: "Company GmbH",
+    recipient: ["Company GmbH", "Recipient Name", "Street 1", "12345 City"],
+    cityOverride: null,
+    date: new Date().toISOString().slice(0, 10),
+    subject: "Subject line",
+    reference: "",
+    body: "",
+    showAnlagen: true,
+    status: "draft",
+  };
 }
 
 // helper so stammdaten branches stay short
@@ -339,18 +359,7 @@ export function appReducer(
 
     // letters: add a fresh blank, switch active to it
     case "LETTERS_ADD": {
-      const letter: CoverLetter = {
-        id: newId(),
-        label: "Untitled letter",
-        company: "Company GmbH",
-        recipient: ["Company GmbH", "Recipient Name", "Street 1", "12345 City"],
-        cityOverride: null,
-        date: new Date().toISOString().slice(0, 10),
-        subject: "Subject line",
-        reference: "",
-        body: "",
-        showAnlagen: true,
-      };
+      const letter = freshLetter();
       return {
         ...state,
         letters: {
@@ -363,10 +372,14 @@ export function appReducer(
     case "LETTERS_DUPLICATE": {
       const source = state.letters.items.find((l) => l.id === action.id);
       if (!source) return state;
+      // the copy gets today's date and starts as a draft — keeping the old
+      // date is the classic "stale date on a duplicated letter" mistake
       const copy: CoverLetter = {
         ...source,
         id: newId(),
         label: `${source.label} copy`,
+        date: new Date().toISOString().slice(0, 10),
+        status: "draft",
       };
       const sourceIdx = state.letters.items.findIndex((l) => l.id === action.id);
       const next = state.letters.items.slice();
@@ -378,23 +391,7 @@ export function appReducer(
     case "LETTERS_REMOVE": {
       const remaining = state.letters.items.filter((l) => l.id !== action.id);
       if (remaining.length === 0) {
-        const fresh: CoverLetter = {
-          id: newId(),
-          label: "Untitled letter",
-          company: "Company GmbH",
-          recipient: [
-            "Company GmbH",
-            "Recipient Name",
-            "Street 1",
-            "12345 City",
-          ],
-          cityOverride: null,
-          date: new Date().toISOString().slice(0, 10),
-          subject: "Subject line",
-          reference: "",
-          body: "",
-          showAnlagen: true,
-        };
+        const fresh = freshLetter();
         return {
           ...state,
           letters: { items: [fresh], activeId: fresh.id },
@@ -418,6 +415,18 @@ export function appReducer(
       };
     case "LETTERS_SET_ACTIVE":
       return { ...state, letters: { ...state.letters, activeId: action.id } };
+
+    // tracking status per letter, editable from the list independent of active
+    case "LETTERS_SET_STATUS":
+      return {
+        ...state,
+        letters: {
+          ...state.letters,
+          items: state.letters.items.map((l) =>
+            l.id === action.id ? { ...l, status: action.status } : l,
+          ),
+        },
+      };
 
     // patch lands on the active letter only, never on others
     case "LETTER_UPDATE":

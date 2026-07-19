@@ -24,6 +24,8 @@ export type DocStrings = {
   betreff: string; // "// betreff"
   anlagen: string; // "> anlagen"
   dateLocale: string; // intl locale for the month name
+  // lebenslauf
+  profil: string; // "// profil" sidebar label
   // about
   aboutKicker: string; // "seite_03 / über_mich" (dev) — see note below
   aboutTitle: string; // "Was mich antreibt."
@@ -47,6 +49,7 @@ export const DOC_STRINGS: Record<DocLocale, DocStrings> = {
     betreff: "betreff",
     anlagen: "anlagen",
     dateLocale: "de-DE",
+    profil: "profil",
     aboutKicker: "über mich",
     aboutTitle: "Was mich antreibt.",
     warumSoftware: "warum_software",
@@ -67,6 +70,7 @@ export const DOC_STRINGS: Record<DocLocale, DocStrings> = {
     betreff: "subject",
     anlagen: "attachments",
     dateLocale: "en-GB",
+    profil: "profile",
     aboutKicker: "about_me",
     aboutTitle: "What drives me.",
     warumSoftware: "why_software",

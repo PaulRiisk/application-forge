@@ -32,6 +32,8 @@ export type ActionKind =
   | "load"
   | "reset"
   | "export"
+  | "undo"
+  | "redo"
   | "modeDev"
   | "modeClassic"
   | "themeBlue"
@@ -99,6 +101,8 @@ export const ACTION_ENTRIES: ActionEntry[] = [
   { id: "act-export", labelKey: "topbar.button.export", action: "export" },
   { id: "act-load", labelKey: "topbar.button.load", action: "load" },
   { id: "act-reset", labelKey: "topbar.button.reset", action: "reset" },
+  { id: "act-undo", labelKey: "palette.act.undo", action: "undo", keywords: ["undo", "rückgängig", "ctrl+z"] },
+  { id: "act-redo", labelKey: "palette.act.redo", action: "redo", keywords: ["redo", "wiederholen", "ctrl+y"] },
   { id: "act-modeDev", labelKey: "topbar.mode.dev", action: "modeDev", keywords: ["dev", "modus", "mode"] },
   { id: "act-modeClassic", labelKey: "topbar.mode.classic", action: "modeClassic", keywords: ["classic", "klassisch", "modus", "mode"] },
   { id: "act-themeBlue", labelKey: "topbar.theme.blue", action: "themeBlue", keywords: ["theme", "farbe", "color", "accent", "akzent"] },

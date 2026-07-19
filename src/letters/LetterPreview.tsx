@@ -5,6 +5,8 @@
 import { useApp } from "../state/AppContext";
 import { renderMarkdown } from "../markdown/render";
 import { docStrings } from "../i18n/docStrings";
+import { findCity } from "../stammdaten/city";
+import { applyPlaceholders } from "./placeholders";
 
 function renderName(name: string) {
   if (name.includes("\n")) {
@@ -20,14 +22,18 @@ function renderName(name: string) {
   return name;
 }
 
-// "27. mai 2026" (de) — lowercase month, no padding, dot after day
+// de: "27. mai 2026" — lowercase month, no padding, dot after day
+// en: "27 May 2026" — capitalized month, no dot
 function formatDate(iso: string, locale: string): string {
   // iso is yyyy-mm-dd from the date input; build a local date to avoid tz drift
   const [y, m, d] = iso.split("-").map(Number);
   if (!y || !m || !d) return iso;
   const date = new Date(y, m - 1, d);
-  const month = date.toLocaleDateString(locale, { month: "long" }).toLowerCase();
-  return `${d}. ${month} ${y}`;
+  const month = date.toLocaleDateString(locale, { month: "long" });
+  if (locale.startsWith("de")) {
+    return `${d}. ${month.toLowerCase()} ${y}`;
+  }
+  return `${d} ${month} ${y}`;
 }
 
 type Props = {
@@ -42,11 +48,7 @@ export function LetterPreview({ signatureUrl }: Props) {
   const prefix = isDev ? "// " : "";
   const d = docStrings(stammdaten.templateLocale);
 
-  const locationRow = stammdaten.contact.find((r) =>
-    r.label.toLowerCase().includes("location"),
-  );
-  const stammCity = locationRow?.value.split(",")[0]?.trim() ?? "";
-  const city = active?.cityOverride?.trim() || stammCity;
+  const city = active?.cityOverride?.trim() || findCity(stammdaten.contact);
   const dateLine = active
     ? `${city ? city + ", " : ""}${formatDate(active.date, d.dateLocale)}`
     : "";
@@ -129,13 +131,17 @@ export function LetterPreview({ signatureUrl }: Props) {
 
             <div className="letter-subject-block">
               <h2 className="sec-label">{prefix}{d.betreff}</h2>
-              <div className="letter-subject">{active.subject}</div>
+              <div className="letter-subject">
+                {applyPlaceholders(active.subject, active.company)}
+              </div>
               {active.reference.trim() !== "" && (
                 <div className="letter-reference">{active.reference}</div>
               )}
             </div>
 
-            <div className="letter-body">{renderMarkdown(active.body)}</div>
+            <div className="letter-body">
+              {renderMarkdown(applyPlaceholders(active.body, active.company))}
+            </div>
 
             {signatureUrl && (
               <img

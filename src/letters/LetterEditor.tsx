@@ -1,13 +1,18 @@
 // editor for one cover letter: company, recipient block, date, subject,
 // reference, body (with markdown toolbar), and an optional signature upload
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useApp, useAppDispatch } from "../state/AppContext";
 import { useT } from "../i18n/LocaleContext";
+import type { LetterStatus } from "../types";
 import { TextField } from "../editor/TextField";
 import { TextAreaField } from "../editor/TextAreaField";
 import { EditorSection } from "../editor/EditorSection";
 import { MarkdownToolbar } from "./MarkdownToolbar";
+import { markdownToPlain } from "../markdown/render";
+import { applyPlaceholders } from "./placeholders";
+
+const STATUS_VALUES: LetterStatus[] = ["draft", "sent", "answered"];
 
 type Props = {
   signatureUrl: string | null;
@@ -22,6 +27,8 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
     letters.items.find((l) => l.id === letters.activeId) ?? letters.items[0];
 
   const bodyRef = useRef<HTMLTextAreaElement | null>(null);
+  // transient "copied!" feedback for the plain-text copy button
+  const [copied, setCopied] = useState(false);
   // when the toolbar rewrites the body, restore the selection after the
   // controlled re-render so the user can keep typing or click another marker
   const pendingSelection = useRef<{ start: number; end: number } | null>(null);
@@ -44,6 +51,38 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
 
   const update = (patch: Partial<typeof active>) => {
     dispatch({ type: "LETTER_UPDATE", patch });
+  };
+
+  // the classic duplicate-and-forget mistake: the body (or subject) still
+  // names the company of another letter. cheap to detect since every letter
+  // lives in the same document
+  const activeText = `${active.subject}\n${active.body}`.toLowerCase();
+  const activeCompany = active.company.trim().toLowerCase();
+  const staleCompanies = [
+    ...new Set(
+      letters.items
+        .filter((l) => l.id !== active.id)
+        .map((l) => l.company.trim())
+        .filter(
+          (c) =>
+            c.length > 3 &&
+            c.toLowerCase() !== activeCompany &&
+            activeText.includes(c.toLowerCase()),
+        ),
+    ),
+  ];
+
+  const handleCopyPlain = async () => {
+    const plain = markdownToPlain(
+      applyPlaceholders(active.body, active.company),
+    );
+    try {
+      await navigator.clipboard.writeText(plain);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // clipboard blocked (permissions); nothing sensible to do
+    }
   };
 
   const handleSignatureFile = (file: File) => {
@@ -159,6 +198,38 @@ export function LetterEditor({ signatureUrl, onSignatureChange }: Props) {
           onChange={(e) => update({ body: e.target.value })}
         />
         <p className="helper-text">{t("letter.body.helper")}</p>
+        {staleCompanies.length > 0 && (
+          <p className="helper-text helper-warning">
+            {t("letter.warn.company", staleCompanies.join(", "))}
+          </p>
+        )}
+        <button type="button" className="row-btn" onClick={handleCopyPlain}>
+          {copied ? t("letter.copyPlain.done") : t("letter.copyPlain")}
+        </button>
+      </EditorSection>
+
+      <EditorSection id="sec-letter-status" title={t("letter.section.status")}>
+        <div className="field">
+          <label htmlFor="fld-letter-status">{t("letter.section.status")}</label>
+          <select
+            id="fld-letter-status"
+            value={active.status}
+            onChange={(e) =>
+              dispatch({
+                type: "LETTERS_SET_STATUS",
+                id: active.id,
+                status: e.target.value as LetterStatus,
+              })
+            }
+          >
+            {STATUS_VALUES.map((s) => (
+              <option key={s} value={s}>
+                {t(`letter.status.${s}`)}
+              </option>
+            ))}
+          </select>
+        </div>
+        <p className="helper-text">{t("letter.status.helper")}</p>
       </EditorSection>
 
       <EditorSection title={t("letter.field.showAnlagen")}>

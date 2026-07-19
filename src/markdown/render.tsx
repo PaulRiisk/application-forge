@@ -5,6 +5,12 @@
 
 import { Fragment, type ReactNode } from "react";
 
+// letters/digits (incl. umlauts) count as word characters for the italic
+// boundary check; undefined (string edge) counts as a boundary
+function isWordChar(ch: string | undefined): boolean {
+  return ch !== undefined && /[\p{L}\p{N}]/u.test(ch);
+}
+
 // inline pass: walk the string, emit text + <strong>/<em> spans
 // no escaping needed because react escapes by default; we never use innerHTML
 function renderInline(text: string, keyBase: string): ReactNode[] {
@@ -33,10 +39,15 @@ function renderInline(text: string, keyBase: string): ReactNode[] {
         continue;
       }
     }
-    // italic: _..._
-    if (text[i] === "_") {
-      const end = text.indexOf("_", i + 1);
-      if (end !== -1) {
+    // italic: _..._ — only at word boundaries so snake_case_words in the
+    // body don't get eaten as formatting
+    if (text[i] === "_" && !isWordChar(text[i - 1])) {
+      let end = text.indexOf("_", i + 1);
+      // closing marker must also sit on a word boundary
+      while (end !== -1 && isWordChar(text[end + 1])) {
+        end = text.indexOf("_", end + 1);
+      }
+      if (end !== -1 && end > i + 1) {
         flush();
         out.push(
           <em key={`${keyBase}-i-${counter++}`}>
@@ -96,6 +107,15 @@ function tokenize(src: string): Block[] {
   flushPara();
   flushUl();
   return blocks;
+}
+
+// strip the markdown markers for plain-text use (copy into web forms, mail
+// bodies). bullets keep their "- ", paragraphs stay separated by blank lines
+export function markdownToPlain(src: string): string {
+  return src
+    .replace(/\r\n/g, "\n")
+    .replace(/\*\*(.+?)\*\*/g, "$1")
+    .replace(/(^|[^\p{L}\p{N}])_([^_\n]+)_(?![\p{L}\p{N}])/gu, "$1$2");
 }
 
 export function renderMarkdown(src: string): ReactNode {

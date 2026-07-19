@@ -1,6 +1,9 @@
 // provides the application document and dispatch to the whole app
 // state and dispatch are split into two contexts so dispatch-only components
 // don't re-render when the doc changes
+// the reducer is wrapped in an undo/redo history (see history.ts); ctrl+z /
+// ctrl+shift+z / ctrl+y are handled globally here, replacing the native
+// per-input undo — the document is the single source of truth anyway
 
 import {
   createContext,
@@ -12,20 +15,26 @@ import {
 } from "react";
 import type { ApplicationDocument } from "../types";
 import { createDefaultApplication } from "../defaults";
-import { appReducer, type Action } from "./reducer";
+import {
+  historyReducer,
+  initHistory,
+  type HistoryAction,
+  type HistoryState,
+} from "./history";
 import { loadFromLocalStorage, saveToLocalStorage } from "./persistence";
 
-type Dispatch = (action: Action) => void;
+type Dispatch = (action: HistoryAction) => void;
 
 const AppStateContext = createContext<ApplicationDocument | null>(null);
 const AppDispatchContext = createContext<Dispatch | null>(null);
 
-function initDocument(): ApplicationDocument {
-  return loadFromLocalStorage() ?? createDefaultApplication();
+function initState(): HistoryState {
+  return initHistory(loadFromLocalStorage() ?? createDefaultApplication());
 }
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [doc, dispatch] = useReducer(appReducer, undefined, initDocument);
+  const [state, dispatch] = useReducer(historyReducer, undefined, initState);
+  const doc = state.present;
 
   // debounce-save on every change so we don't hammer localStorage
   const saveTimer = useRef<number | null>(null);
@@ -42,6 +51,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     };
   }, [doc]);
+
+  // global undo/redo shortcuts; dispatch identity is stable so bind once
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      const key = e.key.toLowerCase();
+      if (key === "z") {
+        e.preventDefault();
+        dispatch({ type: e.shiftKey ? "REDO" : "UNDO" });
+      } else if (key === "y") {
+        e.preventDefault();
+        dispatch({ type: "REDO" });
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   return (
     <AppStateContext.Provider value={doc}>

@@ -3,6 +3,7 @@
 
 import type { ApplicationDocument } from "../types";
 import { newId } from "../types";
+import { slugify } from "../util/slugify";
 
 const STORAGE_KEY = "application-forge-v1";
 
@@ -25,6 +26,7 @@ function isValidDocument(value: unknown): value is ApplicationDocument {
   const letters = v.letters as Record<string, unknown> | undefined;
   if (!letters || typeof letters !== "object") return false;
   if (!Array.isArray(letters.items)) return false;
+  if (!letters.items.every((l) => l && typeof l === "object")) return false;
   if (typeof letters.activeId !== "string") return false;
 
   const cv = v.cv as Record<string, unknown> | undefined;
@@ -51,8 +53,25 @@ function regenerateIds(doc: ApplicationDocument): ApplicationDocument {
   const lettersItems = doc.letters.items.map((l) => {
     const fresh = newId();
     letterIdMap.set(l.id, fresh);
-    // backfill showAnlagen for files saved before the field existed
-    return { ...l, id: fresh, showAnlagen: l.showAnlagen ?? true };
+    // backfill every per-letter field so a hand-edited or pre-field file can't
+    // crash the previews (the top-level guard only checks the list shape)
+    return {
+      ...l,
+      id: fresh,
+      label: typeof l.label === "string" ? l.label : "Untitled letter",
+      company: typeof l.company === "string" ? l.company : "",
+      recipient: Array.isArray(l.recipient) ? l.recipient : [],
+      cityOverride: typeof l.cityOverride === "string" ? l.cityOverride : null,
+      date:
+        typeof l.date === "string" && l.date !== ""
+          ? l.date
+          : new Date().toISOString().slice(0, 10),
+      subject: typeof l.subject === "string" ? l.subject : "",
+      reference: typeof l.reference === "string" ? l.reference : "",
+      body: typeof l.body === "string" ? l.body : "",
+      showAnlagen: l.showAnlagen ?? true,
+      status: l.status ?? "draft",
+    };
   });
   const nextActiveId =
     letterIdMap.get(doc.letters.activeId) ??
@@ -70,7 +89,13 @@ function regenerateIds(doc: ApplicationDocument): ApplicationDocument {
       senderEnabled: doc.stammdaten.senderEnabled ?? false,
       templateLocale: doc.stammdaten.templateLocale ?? "de",
       contact: doc.stammdaten.contact.map((row) => ({ ...row, id: newId() })),
-      schwerpunkt: { ...doc.stammdaten.schwerpunkt, id: newId() },
+      schwerpunkt: {
+        ...doc.stammdaten.schwerpunkt,
+        id: newId(),
+        items: Array.isArray(doc.stammdaten.schwerpunkt.items)
+          ? doc.stammdaten.schwerpunkt.items
+          : [],
+      },
     },
     letters: {
       items: lettersItems,
@@ -78,16 +103,27 @@ function regenerateIds(doc: ApplicationDocument): ApplicationDocument {
     },
     cv: {
       ...doc.cv,
-      skillGroups: doc.cv.skillGroups.map((g) => ({ ...g, id: newId() })),
+      skillGroups: doc.cv.skillGroups.map((g) => ({
+        ...g,
+        id: newId(),
+        items: Array.isArray(g.items) ? g.items : [],
+      })),
       sidebarSections: doc.cv.sidebarSections.map((s) => ({
         ...s,
         id: newId(),
-        rows: s.rows.map((r) => ({ ...r, id: newId() })),
+        rows: (Array.isArray(s.rows) ? s.rows : []).map((r) => ({
+          ...r,
+          id: newId(),
+        })),
       })),
       entrySections: doc.cv.entrySections.map((s) => ({
         ...s,
         id: newId(),
-        entries: s.entries.map((e) => ({ ...e, id: newId() })),
+        entries: (Array.isArray(s.entries) ? s.entries : []).map((e) => ({
+          ...e,
+          id: newId(),
+          bullets: Array.isArray(e.bullets) ? e.bullets : [],
+        })),
       })),
     },
     about: {
@@ -134,16 +170,6 @@ export function clearLocalStorage(): void {
   } catch {
     // no-op
   }
-}
-
-// turn a free-text name into a safe filename slug
-function slugify(name: string): string {
-  const slug = name
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-  return slug || "application";
 }
 
 // trigger a browser download for the whole application document

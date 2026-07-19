@@ -76,6 +76,10 @@ export type Stammdaten = {
   templateLocale: DocLocale;
 };
 
+// per-letter tracking state for the user's own overview, never rendered
+// into any document or pdf
+export type LetterStatus = "draft" | "sent" | "answered";
+
 // one cover letter inside the letters list
 export type CoverLetter = {
   id: string;
@@ -88,6 +92,7 @@ export type CoverLetter = {
   reference: string;
   body: string;
   showAnlagen: boolean;
+  status: LetterStatus;
 };
 
 export type CvDocument = {

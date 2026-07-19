@@ -2,7 +2,7 @@
 // app owns photo + signature (memory only) and zoom state
 // also hosts the offscreen export tree so the export dialog can snapshot all four
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Topbar, type TabId } from "./topbar/Topbar";
 import { Sidebar } from "./topbar/Sidebar";
 import { StammdatenEditor } from "./stammdaten/StammdatenEditor";
@@ -33,6 +33,7 @@ import {
   downloadJson,
   readJsonFile,
 } from "./state/persistence";
+import { deleteImage, loadImage, saveImage } from "./state/imageStore";
 
 // wait one animation frame so layout flushes after a state change
 function nextFrame(): Promise<void> {
@@ -42,12 +43,34 @@ function nextFrame(): Promise<void> {
 function App() {
   const [activeTab, setActiveTab] = useState<TabId>("stammdaten");
 
-  // photo and signature live in app state only, never in the document
+  // photo and signature live in app state, never in the document or the
+  // exported json. they're mirrored into indexeddb so a reload in the same
+  // browser doesn't force a re-upload
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [signatureUrl, setSignatureUrl] = useState<string | null>(null);
   const [zoom, setZoom] = useState(0.75);
   const [exportOpen, setExportOpen] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
+
+  // hydrate both images from indexeddb once on startup
+  useEffect(() => {
+    void loadImage("photo").then((v) => {
+      if (v) setPhotoUrl(v);
+    });
+    void loadImage("signature").then((v) => {
+      if (v) setSignatureUrl(v);
+    });
+  }, []);
+
+  const handlePhotoChange = (url: string | null) => {
+    setPhotoUrl(url);
+    void (url ? saveImage("photo", url) : deleteImage("photo"));
+  };
+  const handleSignatureChange = (url: string | null) => {
+    setSignatureUrl(url);
+    void (url ? saveImage("signature", url) : deleteImage("signature"));
+  };
 
   const doc = useApp();
   const dispatch = useAppDispatch();
@@ -63,10 +86,8 @@ function App() {
     try {
       const loaded = await readJsonFile(file);
       dispatch({ type: "LOAD_DOCUMENT", doc: loaded });
-      // photo and signature aren't in the document — clear so the user knows
-      // to re-upload after loading a saved file
-      setPhotoUrl(null);
-      setSignatureUrl(null);
+      // photo and signature aren't part of the json — they belong to this
+      // browser (indexeddb) and stay as they are across loads
     } catch (err) {
       // persistence.ts rejects with a translation key as the error message
       const key = err instanceof Error ? err.message : "app.load.fallback";
@@ -76,8 +97,8 @@ function App() {
 
   const handleReset = (locale: DocLocale) => {
     clearLocalStorage();
-    setPhotoUrl(null);
-    setSignatureUrl(null);
+    handlePhotoChange(null);
+    handleSignatureChange(null);
     dispatch({ type: "RESET", locale });
     setResetOpen(false);
   };
@@ -106,6 +127,9 @@ function App() {
   // chosen previews, restore active letter, save the pdf
   const runExport = async (sel: ExportSelection) => {
     setExportOpen(false);
+    // keep the export host mounted through the snapshot; it was already
+    // mounted (and laid out) while the dialog was open
+    setExporting(true);
 
     const previousActive = doc.letters.activeId;
     const needLetterSwitch =
@@ -120,6 +144,7 @@ function App() {
 
     const refs = exportRefs.current;
     if (!refs) {
+      setExporting(false);
       window.alert(t("export.hostNotMounted"));
       return;
     }
@@ -153,6 +178,7 @@ function App() {
       if (needLetterSwitch) {
         dispatch({ type: "LETTERS_SET_ACTIVE", id: previousActive });
       }
+      setExporting(false);
     }
   };
 
@@ -195,10 +221,10 @@ function App() {
           left={
             <section aria-label="Editor" style={{ padding: 16 }}>
               {activeTab === "stammdaten" && (
-                <StammdatenEditor photoUrl={photoUrl} onPhotoChange={setPhotoUrl} />
+                <StammdatenEditor photoUrl={photoUrl} onPhotoChange={handlePhotoChange} />
               )}
               {activeTab === "anschreiben" && (
-                <LettersTab signatureUrl={signatureUrl} onSignatureChange={setSignatureUrl} />
+                <LettersTab signatureUrl={signatureUrl} onSignatureChange={handleSignatureChange} />
               )}
               {activeTab === "lebenslauf" && <CvEditor />}
               {activeTab === "about" && <AboutEditor />}
@@ -232,12 +258,17 @@ function App() {
         />
       </div>
 
-      {/* offscreen tree used only by the export pipeline */}
-      <ExportHost
-        ref={exportRefs}
-        photoUrl={photoSrc}
-        signatureUrl={signatureUrl}
-      />
+      {/* offscreen tree used only by the export pipeline; mounted while the
+          export dialog is open (so layout is ready on click) and during the
+          snapshot itself — not permanently, to spare four extra previews
+          re-rendering on every keystroke */}
+      {(exportOpen || exporting) && (
+        <ExportHost
+          ref={exportRefs}
+          photoUrl={photoSrc}
+          signatureUrl={signatureUrl}
+        />
+      )}
 
       <ExportDialog
         open={exportOpen}
