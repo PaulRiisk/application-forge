@@ -21,16 +21,12 @@ Package the app as a standalone `.exe` (Windows) / `.app` (Mac) that users can d
 
 ## GitHub Pages deploy
 
-PLAN §8 Phase 8 includes a GitHub Actions workflow that publishes the
-built app to GitHub Pages. Deferred — user pushes and deploys manually
-when the rest is locked down. When picking this back up:
+Workflow exists and self-enables Pages (`configure-pages` with
+`enablement: true`), actions bumped off the deprecated node20 runners.
+Remaining:
 
-- Add `.github/workflows/deploy.yml` modelled on the cv-builder workflow
-  (Node setup, `npm ci`, `npm run build`, upload `dist/` as a Pages
-  artifact, deploy). Base path is already configured in
-  [vite.config.ts](vite.config.ts) → `/application-forge/` for builds.
-- Enable Pages in repo settings, choose "GitHub Actions" as the source.
-- README needs a live link once the URL is known.
+- README needs a live link once the first deploy is green
+  (expected: https://paulriisk.github.io/application-forge/).
 
 ## Other observations
 
@@ -43,6 +39,10 @@ when the rest is locked down. When picking this back up:
 
 Resolved items, kept briefly for context:
 
+- **Offline support (Jul 2026)** — PWA via `vite-plugin-pwa`: the deployed
+  page precaches the whole build (app shell, fonts, images) on first visit
+  and works fully offline afterwards; auto-updates on new deploys. Electron
+  portable build stays optional on top of this.
 - **"Definitive version" batch (Jul 2026)** — undo/redo (Ctrl+Z/Y, coalesced
   history around the reducer); multi-page PDF export (overflowing pages are
   sliced into extra A4 pages instead of squeezed); photo/signature persisted
